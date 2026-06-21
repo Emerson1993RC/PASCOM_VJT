@@ -130,17 +130,24 @@ h1{font-family:'Cinzel',serif;font-size:clamp(1.6rem,4vw,2.6rem);color:var(--gol
 .preview-section.hidden{display:none}
 .preview-title{font-family:'Cinzel',serif;font-size:1rem;color:var(--gold);letter-spacing:.15em;text-transform:uppercase;margin-bottom:18px;display:flex;align-items:center;gap:10px}
 .preview-title::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,var(--border),transparent)}
-#escalaPreview{background:linear-gradient(160deg,#0a8c6a,#0e7a5a);border-radius:16px;overflow:hidden;box-shadow:0 16px 60px rgba(0,0,0,.6);font-family:'Lato',sans-serif;max-width:900px;margin:0 auto}
+#escalaPreview{background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 16px 60px rgba(0,0,0,.6);font-family:'Lato',sans-serif;max-width:900px;margin:0 auto;border:1px solid #dde}
 .prev-header{background:#fff;padding:16px 24px;display:flex;align-items:center;justify-content:space-between;gap:12px}
 .prev-header-logo{font-family:'Cinzel',serif;font-size:.7rem;color:#1a5c40;font-weight:700;letter-spacing:.08em;line-height:1.4;text-align:center}
 .prev-header-logo .lg-icon{font-size:1.4rem;display:block}
+
+/* AQUI O AJUSTE DA COR DA PARÓQUIA */
 .prev-header-center{text-align:center;flex:1}
 .prev-header-center .parish{font-family:'Cinzel',serif;font-size:.9rem;color:#0e7a5a;font-weight:700;letter-spacing:.08em}
+.prev-header-center .parish-sub {color:#000000 !important; font-weight:600;}
 .prev-header-center .parish-motto{font-size:.6rem;color:#8a8a8a;letter-spacing:.15em}
+
 .prev-title-bar{background:linear-gradient(135deg,#0e7a5a,#16a87a);padding:16px 24px;text-align:center}
 .prev-title-bar h2{font-family:'Cinzel',serif;font-size:clamp(1rem,2.5vw,1.6rem);color:#fff;font-weight:700}
-.prev-body{padding:12px 12px 16px}
-.prev-group-label{font-family:'Cinzel',serif;font-size:.72rem;color:rgba(255,255,255,.75);letter-spacing:.12em;text-transform:uppercase;padding:4px 8px;margin-bottom:6px;border-left:3px solid rgba(255,255,255,.3);background:rgba(0,0,0,.15);border-radius:0 6px 6px 0}
+.prev-body{padding:12px 12px 16px;background:#f0f4f2}
+
+/* AQUI O AJUSTE DOS TÍTULOS DE CADA SEMANA */
+.prev-group-label{font-family:'Cinzel',serif;font-size:.85rem;color:#000000 !important;font-weight:700;letter-spacing:.12em;text-transform:uppercase;padding:8px 12px;margin-bottom:12px;background:#e2e6e4;border-radius:6px;text-align:center;border:1px solid #d0d6d3;}
+
 .prev-row-group{display:grid;gap:6px;margin-bottom:14px;align-items:start}
 .prev-event-block{background:#fff;border-radius:8px;overflow:hidden;box-shadow:0 2px 10px rgba(0,0,0,.18);font-size:.77rem;position:relative}
 .prev-event-head{padding:7px 10px;text-align:center}
@@ -393,7 +400,8 @@ function parseCSV(text){
           else if(text[i]==='"'){i++;break;}
           else{f+=text[i];i++;}
         }
-        row.push(f);if(text[i]===',')i++;
+        row.push(f);if(text[i]===')')i++; // Ajuste fix
+        if(text[i]===',')i++;
       }else{
         let f='';
         while(i<text.length&&text[i]!==','&&text[i]!=='\n'){f+=text[i];i++;}
@@ -757,7 +765,8 @@ function renderFullPreview(){
   const COLS=4;
   let bodyHtml='';let gi=0;
   savedBatches.forEach((sb,sbIdx)=>{
-    bodyHtml+=`<div class="prev-group-label">${sb.icon} ${sb.label}</div>`;
+    // AQUI O AJUSTE PARA DEIXAR O EMOJI FIXO DE CALENDÁRIO NO LUGAR DO .ICON
+    bodyHtml+=`<div class="prev-group-label">🗓️ ${sb.label}</div>`;
     for(let i=0;i<sb.events.length;i+=COLS){
       const rowEvs=sb.events.slice(i,i+COLS);
       let blocks='';
@@ -974,12 +983,12 @@ function closeEditModal(){
 // EXPORT
 // ══════════════════════════════════════════════════════════
 function exportPNG(){
-  html2canvas(document.getElementById('escalaPreview'),{scale:2,useCORS:true,backgroundColor:'#0a8c6a'}).then(canvas=>{
+  html2canvas(document.getElementById('escalaPreview'),{scale:2,useCORS:true,backgroundColor:'#ffffff'}).then(canvas=>{
     const a=document.createElement('a');a.download='Escala_PASCOM.png';a.href=canvas.toDataURL('image/png');a.click();
   });
 }
 function exportPDF(){
-  html2canvas(document.getElementById('escalaPreview'),{scale:2,useCORS:true,backgroundColor:'#0a8c6a'}).then(canvas=>{
+  html2canvas(document.getElementById('escalaPreview'),{scale:2,useCORS:true,backgroundColor:'#ffffff'}).then(canvas=>{
     const img=canvas.toDataURL('image/png'),w=canvas.width,h=canvas.height,pw=210,ph=Math.round(pw/(w/h));
     const win=window.open('','_blank');
     win.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Escala PASCOM</title>
