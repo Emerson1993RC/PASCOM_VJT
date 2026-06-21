@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -8,7 +7,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <style>
-:root{--gold:#c9a84c;--gold-light:#f0d080;--gold-dark:#8a6f2e;--bg-deep:#0d0f1a;--bg-card:#141728;--bg-hover:#222846;--text-primary:#f0ead8;--text-muted:#8a8fa8;--green:#5abfa0;--border:rgba(201,168,76,.18);--shadow:0 8px 40px rgba(0,0,0,.6)}
+:root{--gold:#c9a84c;--gold-light:#f0d080;--gold-dark:#8a6f2e;--bg-deep:#0d0f1a;--bg-card:#141728;--bg-hover:#222846;--text-primary:#f0ead8;--text-muted:#8a8fa8;--green:#5abfa0;--red:#d4594a;--border:rgba(201,168,76,.18);--shadow:0 8px 40px rgba(0,0,0,.6)}
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Lato',sans-serif;background:var(--bg-deep);color:var(--text-primary);min-height:100vh;overflow-x:hidden}
 body::before{content:'';position:fixed;inset:0;background-image:radial-gradient(1px 1px at 20% 30%,rgba(201,168,76,.3) 0%,transparent 100%),radial-gradient(1px 1px at 80% 10%,rgba(201,168,76,.2) 0%,transparent 100%),radial-gradient(1px 1px at 50% 80%,rgba(255,255,255,.1) 0%,transparent 100%),radial-gradient(1px 1px at 10% 60%,rgba(201,168,76,.15) 0%,transparent 100%),radial-gradient(1px 1px at 90% 70%,rgba(255,255,255,.08) 0%,transparent 100%);pointer-events:none;z-index:0}
@@ -26,25 +25,25 @@ h1{font-family:'Cinzel',serif;font-size:clamp(1.6rem,4vw,2.6rem);color:var(--gol
 .upload-title{font-family:'Cinzel',serif;font-size:1rem;color:var(--gold);margin-bottom:6px}
 .upload-sub{font-size:.82rem;color:var(--text-muted)}
 .upload-btn{display:inline-block;margin-top:14px;padding:9px 24px;background:linear-gradient(135deg,var(--gold-dark),var(--gold));color:var(--bg-deep);border-radius:30px;font-family:'Cinzel',serif;font-size:.8rem;font-weight:700;letter-spacing:.1em;cursor:pointer;border:none;transition:all .2s ease;box-shadow:0 4px 15px rgba(201,168,76,.3)}
-.upload-btn:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(201,168,76,.4)}
+.upload-btn:hover{transform:translateY(-1px)}
 #fileInput{display:none}
 .file-loaded{display:inline-flex;align-items:center;gap:8px;margin-top:10px;padding:6px 16px;background:rgba(90,191,160,.12);border:1px solid rgba(90,191,160,.3);border-radius:20px;font-size:.8rem;color:var(--green)}
 .calendar-section{margin:10px 0 32px;display:none;animation:fadeIn .5s ease}
 .calendar-section.visible{display:block}
 .calendar-nav{display:flex;align-items:center;justify-content:center;gap:16px;margin-bottom:20px}
 .nav-btn{width:38px;height:38px;border-radius:50%;border:1px solid var(--border);background:var(--bg-card);color:var(--gold);font-size:1.1rem;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center}
-.nav-btn:hover{background:var(--bg-hover);border-color:var(--gold);box-shadow:0 0 12px rgba(201,168,76,.2)}
+.nav-btn:hover{background:var(--bg-hover);border-color:var(--gold)}
 .month-label{font-family:'Cinzel',serif;font-size:1.2rem;color:var(--gold);letter-spacing:.1em;min-width:220px;text-align:center}
 .calendar-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;background:var(--bg-card);border:1px solid var(--border);border-radius:16px;padding:16px;box-shadow:var(--shadow)}
 .day-label{text-align:center;font-size:.7rem;font-weight:700;letter-spacing:.12em;color:var(--text-muted);padding:6px 2px;text-transform:uppercase}
 .cal-day{aspect-ratio:1;border-radius:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:default;transition:all .2s;position:relative;min-height:44px;font-size:.9rem}
 .cal-day.empty{opacity:0;pointer-events:none}
 .cal-day.has-event{background:rgba(201,168,76,.1);border:1px solid rgba(201,168,76,.25);cursor:pointer}
-.cal-day.has-event:hover{background:rgba(201,168,76,.22);border-color:var(--gold);transform:scale(1.06);box-shadow:0 4px 16px rgba(201,168,76,.25);z-index:2}
-.cal-day.selected{background:linear-gradient(135deg,rgba(201,168,76,.35),rgba(201,168,76,.2));border:1.5px solid var(--gold);box-shadow:0 0 16px rgba(201,168,76,.35)}
+.cal-day.has-event:hover{background:rgba(201,168,76,.22);border-color:var(--gold);transform:scale(1.06);z-index:2}
+.cal-day.selected{background:linear-gradient(135deg,rgba(201,168,76,.35),rgba(201,168,76,.2));border:1.5px solid var(--gold)}
 .cal-day.in-batch{background:rgba(46,204,138,.12);border:1.5px solid rgba(46,204,138,.5)}
 .cal-day.today .day-num{background:var(--gold);color:var(--bg-deep);border-radius:50%;width:28px;height:28px;display:flex;align-items:center;justify-content:center;font-weight:700}
-.day-num{font-size:.88rem;font-weight:400}
+.day-num{font-size:.88rem}
 .event-dot{width:5px;height:5px;border-radius:50%;background:var(--gold);margin-top:2px;box-shadow:0 0 4px var(--gold)}
 .event-count{font-size:.6rem;color:var(--gold-light);margin-top:1px}
 .schedule-section{display:none;animation:fadeIn .4s ease}
@@ -54,15 +53,14 @@ h1{font-family:'Cinzel',serif;font-size:clamp(1.6rem,4vw,2.6rem);color:var(--gol
 .cards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px}
 .event-card{background:var(--bg-card);border:1px solid var(--border);border-radius:14px;padding:20px;transition:all .25s ease;position:relative;overflow:hidden}
 .event-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--gold-dark),var(--gold-light));opacity:.7}
-.event-card:hover{border-color:rgba(201,168,76,.4);transform:translateY(-3px);box-shadow:0 12px 40px rgba(0,0,0,.4)}
-.card-date{font-family:'Cinzel',serif;font-size:.78rem;color:var(--gold);letter-spacing:.12em;margin-bottom:4px}
+.event-card:hover{border-color:rgba(201,168,76,.4);transform:translateY(-3px)}
+.card-date{font-family:'Cinzel',serif;font-size:.78rem;color:var(--gold);margin-bottom:4px}
 .card-title{font-size:.9rem;font-weight:700;color:var(--text-primary);margin-bottom:4px;line-height:1.3}
 .card-time{font-size:.78rem;color:var(--text-muted);margin-bottom:14px}
-.card-time::before{content:'⏰ ';font-size:.7rem}
+.card-time::before{content:'⏰ '}
 .names-list{display:flex;flex-wrap:wrap;gap:6px}
 .name-tag{padding:4px 12px;border-radius:20px;font-size:.75rem;font-weight:700;letter-spacing:.04em;transition:all .2s;cursor:pointer;user-select:none}
 .name-tag:hover{transform:scale(1.08);filter:brightness(1.2)}
-.name-tag:active{transform:scale(.95)}
 .name-tag.copied{outline:2px solid #5abfa0;outline-offset:2px}
 .nc-0{background:rgba(201,168,76,.15);color:#f0d080;border:1px solid rgba(201,168,76,.3)}
 .nc-1{background:rgba(90,191,160,.13);color:#7de8c8;border:1px solid rgba(90,191,160,.3)}
@@ -78,46 +76,33 @@ h1{font-family:'Cinzel',serif;font-size:clamp(1.6rem,4vw,2.6rem);color:var(--gol
 .stat-chip{padding:6px 14px;background:var(--bg-card);border:1px solid var(--border);border-radius:20px;font-size:.78rem;color:var(--text-muted);display:flex;align-items:center;gap:6px}
 .stat-chip span{color:var(--gold);font-weight:700}
 .day-header{background:var(--bg-card);border:1px solid var(--border);border-radius:14px;padding:16px 20px;margin-bottom:20px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
-.day-header-num{font-family:'Cinzel',serif;font-size:2.4rem;font-weight:700;color:var(--gold);line-height:1;text-shadow:0 0 20px rgba(201,168,76,.4)}
+.day-header-num{font-family:'Cinzel',serif;font-size:2.4rem;font-weight:700;color:var(--gold);line-height:1}
 .day-header-name{font-family:'Cinzel',serif;font-size:1.1rem;color:var(--text-primary)}
 .day-header-full{font-size:.82rem;color:var(--text-muted);margin-top:2px}
 .back-btn{padding:7px 18px;background:transparent;border:1px solid var(--border);border-radius:20px;color:var(--text-muted);font-size:.8rem;cursor:pointer;transition:all .2s}
 .back-btn:hover{border-color:var(--gold);color:var(--gold)}
-.wizard-launch-btn{padding:8px 18px;background:linear-gradient(135deg,#1e6e50,#2ecc8a);color:#fff;border:none;border-radius:20px;font-family:'Cinzel',serif;font-size:.78rem;font-weight:700;cursor:pointer;transition:all .2s;box-shadow:0 3px 12px rgba(46,204,138,.3)}
-.wizard-launch-btn:hover{transform:translateY(-1px);box-shadow:0 5px 18px rgba(46,204,138,.45)}
-.pdf-btn{padding:12px 28px;background:linear-gradient(135deg,var(--gold-dark),var(--gold));color:var(--bg-deep);border:none;border-radius:30px;font-family:'Cinzel',serif;font-size:.85rem;font-weight:700;letter-spacing:.1em;cursor:pointer;transition:all .25s ease;box-shadow:0 4px 20px rgba(201,168,76,.35)}
-.pdf-btn:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(201,168,76,.5)}
-.pdf-btn:active{transform:scale(.97)}
-.month-tabs{display:none}
+.wizard-launch-btn{padding:8px 18px;background:linear-gradient(135deg,#1e6e50,#2ecc8a);color:#fff;border:none;border-radius:20px;font-family:'Cinzel',serif;font-size:.78rem;font-weight:700;cursor:pointer;box-shadow:0 3px 12px rgba(46,204,138,.3)}
+.wizard-launch-btn:hover{transform:translateY(-1px)}
+.pdf-btn{padding:12px 28px;background:linear-gradient(135deg,var(--gold-dark),var(--gold));color:var(--bg-deep);border:none;border-radius:30px;font-family:'Cinzel',serif;font-size:.85rem;font-weight:700;letter-spacing:.1em;cursor:pointer;box-shadow:0 4px 20px rgba(201,168,76,.35)}
 .no-data-month{text-align:center;padding:40px;color:var(--text-muted);font-size:.88rem;background:var(--bg-card);border:1px dashed var(--border);border-radius:14px}
-.no-data-month .icon{font-size:2rem;display:block;margin-bottom:10px;opacity:.4}
-
-/* saved batches */
+/* BATCH BAR */
 .saved-batches-bar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:10px 16px;background:rgba(46,204,138,.06);border:1px solid rgba(46,204,138,.2);border-radius:12px;margin-bottom:10px}
 .saved-label{font-size:.75rem;color:#7de8c8;font-weight:700;white-space:nowrap}
 .saved-pills{display:flex;gap:7px;flex-wrap:wrap;flex:1}
 .saved-batch-pill{display:inline-flex;align-items:center;gap:6px;padding:4px 12px;background:rgba(46,204,138,.13);border:1px solid rgba(46,204,138,.35);border-radius:20px;font-size:.73rem;color:#7de8c8}
-.saved-batch-pill .sb-icon{font-size:.85rem}
 .saved-batch-pill .sb-label{font-weight:700}
 .saved-batch-pill .sb-count{opacity:.7;font-size:.67rem}
-.saved-batch-pill button{background:none;border:none;color:#7de8c8;cursor:pointer;opacity:.6;padding:0;line-height:1;font-size:.8rem}
+.saved-batch-pill button{background:none;border:none;color:#7de8c8;cursor:pointer;opacity:.6;padding:0;font-size:.8rem}
 .saved-batch-pill button:hover{opacity:1}
-.btn-clear-all{padding:5px 13px;background:rgba(212,89,74,.15);color:#f08878;border:1px solid rgba(212,89,74,.35);border-radius:16px;font-size:.72rem;cursor:pointer;transition:all .2s;white-space:nowrap}
-.btn-clear-all:hover{background:rgba(212,89,74,.3)}
+.btn-clear-all{padding:5px 13px;background:rgba(212,89,74,.15);color:#f08878;border:1px solid rgba(212,89,74,.35);border-radius:16px;font-size:.72rem;cursor:pointer;white-space:nowrap}
 .batch-bar-inner{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:10px 16px;background:rgba(201,168,76,.05);border:1px solid var(--border);border-radius:12px}
-/* group separator in preview */
-.prev-group-label{font-family:'Cinzel',serif;font-size:.72rem;color:rgba(255,255,255,.75);letter-spacing:.12em;text-transform:uppercase;padding:4px 8px;margin-bottom:6px;border-left:3px solid rgba(255,255,255,.3);background:rgba(0,0,0,.15);border-radius:0 6px 6px 0}
 .batch-count{font-family:'Cinzel',serif;font-size:.85rem;color:#7de8c8;font-weight:700}
 .batch-days{display:flex;gap:6px;flex-wrap:wrap;flex:1}
-.batch-day-chip{padding:3px 12px;background:rgba(46,204,138,.12);border:1px solid rgba(46,204,138,.3);border-radius:20px;font-size:.72rem;color:#7de8c8;display:flex;align-items:center;gap:6px}
-.batch-day-chip button{background:none;border:none;color:#7de8c8;cursor:pointer;font-size:.8rem;padding:0;line-height:1;opacity:.7}
-.batch-day-chip button:hover{opacity:1}
-.btn-clear-batch{padding:6px 14px;background:rgba(212,89,74,.12);color:#f08878;border:1px solid rgba(212,89,74,.3);border-radius:20px;font-size:.75rem;cursor:pointer;transition:all .2s}
-.btn-clear-batch:hover{background:rgba(212,89,74,.25)}
-.btn-build-batch{padding:8px 20px;background:linear-gradient(135deg,#1e6e50,#2ecc8a);color:#fff;border:none;border-radius:20px;font-family:'Cinzel',serif;font-size:.8rem;font-weight:700;cursor:pointer;transition:all .2s;box-shadow:0 3px 12px rgba(46,204,138,.3)}
-.btn-build-batch:hover{transform:translateY(-1px)}
-
-/* WIZARD */
+.batch-day-chip{display:inline-flex;align-items:center;gap:6px;padding:3px 12px;background:rgba(46,204,138,.12);border:1px solid rgba(46,204,138,.3);border-radius:20px;font-size:.72rem;color:#7de8c8}
+.batch-day-chip button{background:none;border:none;color:#7de8c8;cursor:pointer;font-size:.8rem;padding:0;opacity:.7}
+.btn-clear-batch{padding:6px 14px;background:rgba(212,89,74,.12);color:#f08878;border:1px solid rgba(212,89,74,.3);border-radius:20px;font-size:.75rem;cursor:pointer}
+.btn-build-batch{padding:8px 20px;background:linear-gradient(135deg,#1e6e50,#2ecc8a);color:#fff;border:none;border-radius:20px;font-family:'Cinzel',serif;font-size:.8rem;font-weight:700;cursor:pointer;box-shadow:0 3px 12px rgba(46,204,138,.3)}
+/* WIZARD MODAL */
 #copyToast{position:fixed;bottom:32px;left:50%;transform:translateX(-50%) translateY(20px);background:linear-gradient(135deg,#1a1f35,#222846);border:1px solid rgba(90,191,160,.4);color:#7de8c8;font-family:'Lato',sans-serif;font-size:.85rem;font-weight:700;padding:10px 22px;border-radius:30px;box-shadow:0 8px 30px rgba(0,0,0,.5);opacity:0;pointer-events:none;transition:opacity .25s ease,transform .25s ease;z-index:9999;display:flex;align-items:center;gap:8px;white-space:nowrap}
 #copyToast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);backdrop-filter:blur(6px);z-index:1000;display:flex;align-items:center;justify-content:center;padding:20px;animation:fadeIn .2s ease}
@@ -129,10 +114,8 @@ h1{font-family:'Cinzel',serif;font-size:clamp(1.6rem,4vw,2.6rem);color:var(--gol
 .modal-person{font-size:.88rem;color:var(--text-muted);margin-bottom:16px;line-height:1.5}
 .modal-person strong{color:var(--text-primary)}
 .modal-buttons{display:flex;gap:12px;margin-top:16px}
-.btn-sim{flex:1;padding:11px;background:linear-gradient(135deg,#1e6e50,#2ecc8a);color:#fff;border:none;border-radius:12px;font-family:'Cinzel',serif;font-size:.88rem;font-weight:700;cursor:pointer;transition:all .2s;box-shadow:0 4px 14px rgba(46,204,138,.25)}
-.btn-sim:hover{transform:translateY(-2px)}
-.btn-nao{flex:1;padding:11px;background:rgba(212,89,74,.12);color:#f08878;border:1px solid rgba(212,89,74,.35);border-radius:12px;font-family:'Cinzel',serif;font-size:.88rem;font-weight:700;cursor:pointer;transition:all .2s}
-.btn-nao:hover{background:rgba(212,89,74,.22);transform:translateY(-2px)}
+.btn-sim{flex:1;padding:11px;background:linear-gradient(135deg,#1e6e50,#2ecc8a);color:#fff;border:none;border-radius:12px;font-family:'Cinzel',serif;font-size:.88rem;font-weight:700;cursor:pointer}
+.btn-nao{flex:1;padding:11px;background:rgba(212,89,74,.12);color:#f08878;border:1px solid rgba(212,89,74,.35);border-radius:12px;font-family:'Cinzel',serif;font-size:.88rem;font-weight:700;cursor:pointer}
 .progress-outer{margin-bottom:18px}
 .progress-event-label{font-size:.68rem;color:var(--text-muted);margin-bottom:6px;letter-spacing:.1em}
 .progress-bar{display:flex;gap:5px;margin-bottom:4px}
@@ -141,15 +124,13 @@ h1{font-family:'Cinzel',serif;font-size:clamp(1.6rem,4vw,2.6rem);color:var(--gol
 .progress-dot.active{background:var(--gold-light)}
 .name-chips{display:flex;flex-wrap:wrap;gap:7px;margin-top:10px}
 .name-chip{padding:5px 13px;border-radius:20px;border:1px solid rgba(201,168,76,.4);background:rgba(201,168,76,.1);color:#f0d080;font-size:.76rem;font-weight:700;cursor:pointer;transition:all .2s}
-.name-chip:hover{background:rgba(201,168,76,.25)}
-.name-chip.selected{background:rgba(201,168,76,.4);outline:2px solid #f0d080;outline-offset:1px}
-
+.name-chip.selected{background:rgba(201,168,76,.4);outline:2px solid #f0d080}
 /* PREVIEW */
 .preview-section{margin-top:36px}
 .preview-section.hidden{display:none}
 .preview-title{font-family:'Cinzel',serif;font-size:1rem;color:var(--gold);letter-spacing:.15em;text-transform:uppercase;margin-bottom:18px;display:flex;align-items:center;gap:10px}
 .preview-title::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,var(--border),transparent)}
-#escalaPreview{background:linear-gradient(160deg,#0a8c6a,#0e7a5a);border-radius:16px;padding:0;overflow:hidden;box-shadow:0 16px 60px rgba(0,0,0,.6);font-family:'Lato',sans-serif;max-width:900px;margin:0 auto}
+#escalaPreview{background:linear-gradient(160deg,#0a8c6a,#0e7a5a);border-radius:16px;overflow:hidden;box-shadow:0 16px 60px rgba(0,0,0,.6);font-family:'Lato',sans-serif;max-width:900px;margin:0 auto}
 .prev-header{background:#fff;padding:16px 24px;display:flex;align-items:center;justify-content:space-between;gap:12px}
 .prev-header-logo{font-family:'Cinzel',serif;font-size:.7rem;color:#1a5c40;font-weight:700;letter-spacing:.08em;line-height:1.4;text-align:center}
 .prev-header-logo .lg-icon{font-size:1.4rem;display:block}
@@ -157,17 +138,14 @@ h1{font-family:'Cinzel',serif;font-size:clamp(1.6rem,4vw,2.6rem);color:var(--gol
 .prev-header-center .parish{font-family:'Cinzel',serif;font-size:.9rem;color:#0e7a5a;font-weight:700;letter-spacing:.08em}
 .prev-header-center .parish-motto{font-size:.6rem;color:#8a8a8a;letter-spacing:.15em}
 .prev-title-bar{background:linear-gradient(135deg,#0e7a5a,#16a87a);padding:16px 24px;text-align:center}
-.prev-title-bar h2{font-family:'Cinzel',serif;font-size:clamp(1rem,2.5vw,1.6rem);color:#fff;font-weight:700;letter-spacing:.06em;text-shadow:0 2px 8px rgba(0,0,0,.3)}
+.prev-title-bar h2{font-family:'Cinzel',serif;font-size:clamp(1rem,2.5vw,1.6rem);color:#fff;font-weight:700}
 .prev-body{padding:12px 12px 16px}
+.prev-group-label{font-family:'Cinzel',serif;font-size:.72rem;color:rgba(255,255,255,.75);letter-spacing:.12em;text-transform:uppercase;padding:4px 8px;margin-bottom:6px;border-left:3px solid rgba(255,255,255,.3);background:rgba(0,0,0,.15);border-radius:0 6px 6px 0}
 .prev-row-group{display:grid;gap:6px;margin-bottom:14px;align-items:start}
-/* editable blocks */
 .prev-event-block{background:#fff;border-radius:8px;overflow:hidden;box-shadow:0 2px 10px rgba(0,0,0,.18);font-size:.77rem;position:relative}
-.prev-event-block .edit-overlay{position:absolute;top:4px;right:4px;opacity:0;transition:opacity .2s;z-index:5}
-.prev-event-block:hover .edit-overlay{opacity:1}
-.edit-slot-btn{padding:2px 8px;background:#fff3;border:1px solid rgba(255,255,255,.5);border-radius:10px;color:#fff;font-size:.6rem;cursor:pointer;backdrop-filter:blur(4px)}
-.prev-event-head{padding:7px 10px;text-align:center;position:relative;cursor:default}
-.ev-weekday{font-family:'Cinzel',serif;font-size:.68rem;color:#fff;font-weight:700;letter-spacing:.05em;text-transform:uppercase;line-height:1.3}
-.ev-date-sub{font-size:.6rem;color:rgba(255,255,255,.85);margin-top:2px}
+.prev-event-head{padding:7px 10px;text-align:center}
+.ev-weekday{font-family:'Cinzel',serif;font-size:.67rem;color:#fff;font-weight:700;letter-spacing:.04em;text-transform:uppercase;line-height:1.3}
+.ev-date-sub{font-size:.6rem;color:rgba(255,255,255,.9);margin-top:2px;font-weight:700}
 .prev-event-rows{padding:0}
 .prev-row{display:flex;align-items:stretch;border-bottom:1px solid #f0f0f0}
 .prev-row:last-child{border-bottom:none}
@@ -175,40 +153,72 @@ h1{font-family:'Cinzel',serif;font-size:clamp(1.6rem,4vw,2.6rem);color:var(--gol
 .prev-row-value{flex:1;padding:5px 7px;font-size:.68rem;color:#1a1a1a;font-weight:600;line-height:1.3;cursor:pointer;transition:background .15s}
 .prev-row-value:hover{background:#fffbe6}
 .prev-row-value.empty{color:#aaa;font-style:italic;font-weight:400}
-.prev-row-value.editing{background:#fffbe6;outline:2px solid #c9a84c}
 .prev-row.horario .prev-row-label,.prev-row.horario .prev-row-value{background:#7b2d8b;color:#fff;font-weight:700;cursor:default}
 .prev-row.horario .prev-row-value:hover{background:#7b2d8b}
-.prev-row.cabeamento .prev-row-label{background:#e8f5e9}
-.prev-row.diretor-row .prev-row-label{background:#e3f2fd;font-size:.62rem}
-.prev-row.diretor-row .prev-row-value{font-size:.65rem}
 .prev-footer{background:linear-gradient(135deg,#0e7a5a,#0a6a48);padding:12px 24px;text-align:center}
-.prev-footer .footer-quote{font-family:'Cinzel',serif;font-size:.88rem;color:rgba(255,255,255,.9);font-style:italic;letter-spacing:.08em}
+.prev-footer .footer-quote{font-family:'Cinzel',serif;font-size:.88rem;color:rgba(255,255,255,.9);font-style:italic}
 .export-btns{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin-top:20px}
-.btn-export{padding:11px 28px;border-radius:30px;font-family:'Cinzel',serif;font-size:.82rem;font-weight:700;letter-spacing:.1em;cursor:pointer;transition:all .25s;border:none}
-.btn-pdf{background:linear-gradient(135deg,#8a2be2,#6a1cc2);color:#fff;box-shadow:0 4px 16px rgba(138,43,226,.35)}
-.btn-pdf:hover{transform:translateY(-2px);box-shadow:0 6px 24px rgba(138,43,226,.5)}
-.btn-png{background:linear-gradient(135deg,var(--gold-dark),var(--gold));color:var(--bg-deep);box-shadow:0 4px 16px rgba(201,168,76,.35)}
-.btn-png:hover{transform:translateY(-2px);box-shadow:0 6px 24px rgba(201,168,76,.5)}
+.btn-export{padding:11px 28px;border-radius:30px;font-family:'Cinzel',serif;font-size:.82rem;font-weight:700;letter-spacing:.1em;cursor:pointer;border:none}
+.btn-pdf{background:linear-gradient(135deg,#8a2be2,#6a1cc2);color:#fff}
+.btn-png{background:linear-gradient(135deg,var(--gold-dark),var(--gold));color:var(--bg-deep)}
+/* PREVIEW CONTROLS */
+.preview-controls{max-width:900px;margin:0 auto 14px;background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:12px 16px;display:flex;flex-direction:column;gap:10px}
+.ctrl-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.ctrl-label{font-family:'Cinzel',serif;font-size:.75rem;color:var(--gold-light);white-space:nowrap}
+.title-input{flex:1;min-width:160px;padding:6px 12px;background:#0d0f1a;border:1px solid var(--border);border-radius:8px;color:var(--text-primary);font-family:'Cinzel',serif;font-size:.82rem;outline:none}
+.title-input:focus{border-color:var(--gold)}
+.tc-btn{width:20px;height:20px;border-radius:50%;cursor:pointer;border:2px solid transparent;transition:transform .15s;flex-shrink:0}
+.tc-btn:hover{transform:scale(1.2)}
+.tc-btn.active{border:2px solid var(--gold-light) !important;transform:scale(1.15)}
+/* liturgy bar old → keep compatible */
+.liturgy-bar{display:none}
+.liturgy-swatches{display:flex;gap:6px;flex-wrap:wrap}
+.ls-btn{display:flex;align-items:center;gap:5px;padding:4px 11px;border-radius:20px;border:1px solid var(--border);background:var(--bg-hover);color:var(--text-muted);font-family:'Lato',sans-serif;font-size:.74rem;cursor:pointer;transition:all .2s}
+.ls-btn:hover{border-color:var(--gold);color:var(--text-primary)}
+.ls-btn.active{border-color:var(--gold);color:var(--gold-light);background:rgba(201,168,76,.12);font-weight:700}
+.ls-dot{width:11px;height:11px;border-radius:50%;display:inline-block;flex-shrink:0}
 
-/* INLINE EDIT MODAL */
+/* Color theme — só o cabeçalho dos cards e linha de horário mudam */
+/* Verde (padrão já usa getHeadColor, sem override) */
+#escalaPreview.lc-verde    .prev-event-head { background:#2e7d32 !important }
+#escalaPreview.lc-verde    .prev-row.horario .prev-row-label,
+#escalaPreview.lc-verde    .prev-row.horario .prev-row-value { background:#2e7d32 !important }
+
+/* Branco/Dourado — festas */
+#escalaPreview.lc-branco   .prev-event-head { background:#b8a000 !important }
+#escalaPreview.lc-branco   .prev-row.horario .prev-row-label,
+#escalaPreview.lc-branco   .prev-row.horario .prev-row-value { background:#b8a000 !important }
+
+/* Vermelho — Pentecostes/Mártires */
+#escalaPreview.lc-vermelho .prev-event-head { background:#b71c1c !important }
+#escalaPreview.lc-vermelho .prev-row.horario .prev-row-label,
+#escalaPreview.lc-vermelho .prev-row.horario .prev-row-value { background:#b71c1c !important }
+
+/* Roxo — Advento/Quaresma */
+#escalaPreview.lc-roxo     .prev-event-head { background:#6a1b9a !important }
+#escalaPreview.lc-roxo     .prev-row.horario .prev-row-label,
+#escalaPreview.lc-roxo     .prev-row.horario .prev-row-value { background:#6a1b9a !important }
+
+/* Rosa — 3º Advento / 4º Quaresma */
+#escalaPreview.lc-rosa     .prev-event-head { background:#c2185b !important }
+#escalaPreview.lc-rosa     .prev-row.horario .prev-row-label,
+#escalaPreview.lc-rosa     .prev-row.horario .prev-row-value { background:#c2185b !important }
 .edit-modal{position:fixed;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(4px);z-index:2000;display:flex;align-items:center;justify-content:center;padding:20px}
 .edit-modal.hidden{display:none}
-.edit-modal-box{background:var(--bg-card);border:1px solid var(--border);border-radius:16px;padding:24px;max-width:400px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.8)}
+.edit-modal-box{background:var(--bg-card);border:1px solid var(--border);border-radius:16px;padding:24px;max-width:400px;width:100%}
 .edit-modal-box h3{font-family:'Cinzel',serif;color:var(--gold-light);font-size:1rem;margin-bottom:4px}
 .edit-modal-box .edit-ev-label{font-size:.78rem;color:var(--text-muted);margin-bottom:14px}
 .edit-chips{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:16px}
-.edit-chip{padding:5px 14px;border-radius:20px;border:1px solid rgba(201,168,76,.4);background:rgba(201,168,76,.1);color:#f0d080;font-size:.78rem;font-weight:700;cursor:pointer;transition:all .2s}
-.edit-chip:hover{background:rgba(201,168,76,.28)}
+.edit-chip{padding:5px 14px;border-radius:20px;border:1px solid rgba(201,168,76,.4);background:rgba(201,168,76,.1);color:#f0d080;font-size:.78rem;font-weight:700;cursor:pointer}
 .edit-chip.selected{background:rgba(201,168,76,.45);outline:2px solid #f0d080}
 .edit-manual{width:100%;padding:8px 12px;background:#0d0f1a;border:1px solid var(--border);border-radius:10px;color:var(--text-primary);font-size:.85rem;margin-bottom:14px;outline:none}
 .edit-manual:focus{border-color:var(--gold)}
 .edit-actions{display:flex;gap:10px}
 .edit-confirm{flex:1;padding:10px;background:linear-gradient(135deg,#1e6e50,#2ecc8a);color:#fff;border:none;border-radius:10px;font-family:'Cinzel',serif;font-size:.85rem;font-weight:700;cursor:pointer}
 .edit-dash{padding:10px 18px;background:rgba(212,89,74,.12);color:#f08878;border:1px solid rgba(212,89,74,.35);border-radius:10px;font-family:'Cinzel',serif;font-size:.85rem;font-weight:700;cursor:pointer}
-.edit-cancel{padding:10px 14px;background:transparent;color:var(--text-muted);border:1px solid var(--border);border-radius:10px;cursor:pointer;font-size:.85rem}
-
+.edit-cancel{padding:10px 14px;background:transparent;color:var(--text-muted);border:1px solid var(--border);border-radius:10px;cursor:pointer}
 @keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
-@media(max-width:600px){.cards-grid{grid-template-columns:1fr}.calendar-grid{padding:10px 6px;gap:2px}.cal-day{min-height:36px;font-size:.8rem}.day-label{font-size:.6rem;padding:4px 1px}}
+@media(max-width:600px){.cards-grid{grid-template-columns:1fr}.calendar-grid{padding:10px 6px;gap:2px}.cal-day{min-height:36px}}
 </style>
 </head>
 <body>
@@ -233,7 +243,7 @@ h1{font-family:'Cinzel',serif;font-size:clamp(1.6rem,4vw,2.6rem);color:var(--gol
   </div>
 </div>
 
-<!-- INLINE EDIT MODAL -->
+<!-- EDIT MODAL -->
 <div class="edit-modal hidden" id="editModal">
   <div class="edit-modal-box">
     <h3 id="editModalTitle"></h3>
@@ -278,16 +288,54 @@ h1{font-family:'Cinzel',serif;font-size:clamp(1.6rem,4vw,2.6rem);color:var(--gol
     <div id="batchBar" style="display:none"></div>
     <div id="scheduleContent"></div>
     <div id="pdfBtnWrap" style="display:none;text-align:center;margin-top:28px;">
-      <button class="pdf-btn" id="pdfBtn" onclick="generatePDF()">📄 Gerar PDF desta Escala</button>
+      <button class="pdf-btn" onclick="generatePDF()">📄 Gerar PDF desta Escala</button>
     </div>
   </div>
 
   <div class="preview-section hidden" id="previewSection">
     <div class="preview-title">📋 Preview da Escala Montada
-      <span style="font-family:Lato,sans-serif;font-size:.72rem;color:var(--text-muted);text-transform:none;letter-spacing:0;font-weight:400">
-        · Clique em qualquer nome para editar
-      </span>
+      <span style="font-family:Lato,sans-serif;font-size:.72rem;color:var(--text-muted);text-transform:none;letter-spacing:0;font-weight:400"> · Clique em qualquer valor para editar</span>
     </div>
+
+    <!-- CONTROLES DO PREVIEW -->
+    <div class="preview-controls">
+      <div class="ctrl-row">
+        <span class="ctrl-label">✏️ Título:</span>
+        <input id="previewTitleInput" class="title-input" value="" placeholder="Escala comum de ...">
+        <span class="ctrl-label" style="margin-left:8px">🎨 Cor:</span>
+        <button class="tc-btn active" data-tc="#ffffff"  onclick="setTitleColor('#ffffff',this)"  style="background:#ffffff;border:2px solid #0e7a5a"></button>
+        <button class="tc-btn"        data-tc="#0e7a5a"  onclick="setTitleColor('#0e7a5a',this)"  style="background:#0e7a5a"></button>
+        <button class="tc-btn"        data-tc="#f0d080"  onclick="setTitleColor('#f0d080',this)"  style="background:#f0d080"></button>
+        <button class="tc-btn"        data-tc="#b71c1c"  onclick="setTitleColor('#b71c1c',this)"  style="background:#b71c1c"></button>
+        <button class="tc-btn"        data-tc="#6a1b9a"  onclick="setTitleColor('#6a1b9a',this)"  style="background:#6a1b9a"></button>
+        <button class="tc-btn"        data-tc="#c2185b"  onclick="setTitleColor('#c2185b',this)"  style="background:#c2185b"></button>
+        <button class="tc-btn"        data-tc="#1a237e"  onclick="setTitleColor('#1a237e',this)"  style="background:#1a237e"></button>
+      </div>
+      <div class="ctrl-row">
+        <span class="ctrl-label">🖌️ Barra título/rodapé:</span>
+        <div class="liturgy-swatches">
+          <button class="ls-btn active" data-bar="padrao"   onclick="setBarColor('padrao',this)"  ><span class="ls-dot" style="background:linear-gradient(135deg,#0e7a5a,#16a87a)"></span>Padrão</button>
+          <button class="ls-btn"        data-bar="verde"    onclick="setBarColor('verde',this)"   ><span class="ls-dot" style="background:#2e7d32"></span>Verde</button>
+          <button class="ls-btn"        data-bar="dourado"  onclick="setBarColor('dourado',this)" ><span class="ls-dot" style="background:#b8a000"></span>Dourado</button>
+          <button class="ls-btn"        data-bar="vermelho" onclick="setBarColor('vermelho',this)"><span class="ls-dot" style="background:#b71c1c"></span>Vermelho</button>
+          <button class="ls-btn"        data-bar="roxo"     onclick="setBarColor('roxo',this)"    ><span class="ls-dot" style="background:#6a1b9a"></span>Roxo</button>
+          <button class="ls-btn"        data-bar="rosa"     onclick="setBarColor('rosa',this)"    ><span class="ls-dot" style="background:#c2185b"></span>Rosa</button>
+          <button class="ls-btn"        data-bar="azul"     onclick="setBarColor('azul',this)"    ><span class="ls-dot" style="background:#1a237e"></span>Azul</button>
+        </div>
+      </div>
+      <div class="ctrl-row">
+        <span class="ctrl-label">🕊️ Cor litúrgica (cards):</span>
+        <div class="liturgy-swatches">
+          <button class="ls-btn active" data-color="none"     onclick="setLiturgyColor('none',this)"    ><span class="ls-dot" style="background:linear-gradient(135deg,#5b2d8e,#e67e22)"></span>Padrão</button>
+          <button class="ls-btn"        data-color="verde"    onclick="setLiturgyColor('verde',this)"   ><span class="ls-dot" style="background:#2e7d32"></span>Verde</button>
+          <button class="ls-btn"        data-color="branco"   onclick="setLiturgyColor('branco',this)"  ><span class="ls-dot" style="background:#b8a000"></span>Branco</button>
+          <button class="ls-btn"        data-color="vermelho" onclick="setLiturgyColor('vermelho',this)"><span class="ls-dot" style="background:#b71c1c"></span>Vermelho</button>
+          <button class="ls-btn"        data-color="roxo"     onclick="setLiturgyColor('roxo',this)"    ><span class="ls-dot" style="background:#6a1b9a"></span>Roxo</button>
+          <button class="ls-btn"        data-color="rosa"     onclick="setLiturgyColor('rosa',this)"    ><span class="ls-dot" style="background:#e91e8c"></span>Rosa</button>
+        </div>
+      </div>
+    </div>
+
     <div id="escalaPreview"></div>
     <div class="export-btns">
       <button class="btn-export btn-pdf" onclick="exportPDF()">📄 Baixar PDF</button>
@@ -303,30 +351,35 @@ h1{font-family:'Cinzel',serif;font-size:clamp(1.6rem,4vw,2.6rem);color:var(--gol
 const PT_MONTHS=['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
 const PT_DAYS=['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
 const PT_DAYS_FULL=['Domingo','Segunda-feira','Terça-feira','Quarta-feira','Quinta-feira','Sexta-feira','Sábado'];
-const SLOTS=['Panasonic P','Canon','Storymaker','Fotografia','Diretor 1','Diretor 2'];
+
+// ── AJUSTE 1: Auxiliar adicionado ──────────────────────────
+const SLOTS=['Panasonic P','Canon','Storymaker','Fotografia','Auxiliar','Diretor 1','Diretor 2'];
 
 let allEvents=[], nameColors={};
 let currentYear=new Date().getFullYear(), currentMonth=new Date().getMonth();
 let selectedDay=null;
-
-// BATCH: array of {day,month,year} objects, sorted by date
 let batchDays=[];
-
-// SAVED BATCHES: array of {label, events:[], data:{}} — persists across clears
 let savedBatches=[];
-
-// WIZARD: flat queue of {ev, globalIdx, slot}
 let wizardQueue=[], wizardQueueIdx=0;
-// wizardData[globalIdx][slot] = name | '—'
-let wizardData={};
-// all events in current batch (sorted)
-let batchEvents=[];
+let wizardData={}, batchEvents=[];
+let cardColors={}; // gi → cor individual do cabeçalho do card
+let cardTimes={};  // gi → horário individual override
+let editCtx=null;
 
-// EDIT
-let editCtx=null; // {globalIdx, slot, names}
+function getHeadColor(ev){
+  const t=ev.title.toLowerCase();
+  if(t.includes('quinta'))  return '#5b2d8e';
+  if(t.includes('manhã'))   return '#e67e22';
+  if(t.includes('noite'))   return '#2c3e6b';
+  if(t.includes('sexta'))   return '#1a6b4a';
+  if(t.includes('sábado'))  return '#8e2d6b';
+  if(t.includes('corpus'))  return '#8e2d2d';
+  if(t.includes('quarta'))  return '#1a4a6b';
+  return '#2d5a8e';
+}
 
 // ══════════════════════════════════════════════════════════
-// CSV
+// CSV PARSE
 // ══════════════════════════════════════════════════════════
 function parseCSV(text){
   const rows=[];let i=0;
@@ -352,6 +405,7 @@ function parseCSV(text){
   }
   return rows;
 }
+
 function extractDate(col){
   const m=col.match(/\[(\d{2})\/(\d{2})\/(\d{4})/);
   if(!m)return null;
@@ -359,11 +413,37 @@ function extractDate(col){
   if(day===0)return null;
   return{day,month,year};
 }
+
+// ── AJUSTE 3: horário no formato h00 + solenidade ─────────
 function extractTime(col){
-  const ps=[/Chegada[^\d]*(\d{1,2}:\d{2})hs/i,/Chegada[^\d]*(\d{1,2})hs/i,/(\d{1,2}:\d{2})hs/i,/(\d{1,2})hs/i];
-  for(const p of ps){const m=col.match(p);if(m)return m[1].includes(':')?m[1]:m[1]+':00';}
+  const ps=[
+    /hor[aá]rio de chegada:\s*(\d{1,2})h(\d{2})/i,
+    /chegada[^\d]*(\d{1,2})h(\d{2})/i,
+    /chegada[^\d]*(\d{1,2}):(\d{2})/i,
+    /(\d{1,2})h(\d{2})/,
+    /(\d{1,2}):(\d{2})hs/i,
+  ];
+  for(const p of ps){const m=col.match(p);if(m)return `${m[1]}:${m[2]||'00'}`;}
   return null;
 }
+
+function extractSpecialTime(col){
+  // Só aplica se a data desta coluna coincidir com a data da exceção mencionada no texto
+  // Ex: "⚠️ Exceto no dia 04/06 — Solenidade..." só vale para [04/06/2026]
+  const exceptionMatch = col.match(/exceto no dia\s+(\d{2})\/(\d{2})/i);
+  if(!exceptionMatch) return null;
+  const excDay=exceptionMatch[1], excMonth=exceptionMatch[2];
+  // Pega a data desta coluna (entre colchetes no final)
+  const colDate = col.match(/\[(\d{2})\/(\d{2})\/(\d{4})/);
+  if(!colDate) return null;
+  // Só aplica o horário especial se dia/mês coincidem com a exceção
+  if(colDate[1]!==excDay || colDate[2]!==excMonth) return null;
+  // Captura o segundo horário (o da solenidade)
+  const all=[...col.matchAll(/hor[aá]rio de chegada:\s*(\d{1,2})h(\d{2})/gi)];
+  if(all.length>=2) return `${all[1][1]}:${all[1][2]}`;
+  return null;
+}
+
 function extractTitle(col){
   let t=col.split('\n')[0].trim().replace(/\s*\[.*?\]\s*/g,'').trim();
   t=t.replace(/Escala para as quartas-feiras\.\s*/i,'📷 Quarta-feira')
@@ -371,7 +451,7 @@ function extractTitle(col){
      .replace(/Escala para as sextas-feiras\.\s*/i,'📷 Sexta-feira')
      .replace(/Escala para os Domingos \(Manhã\)\.\s*/i,'🌅 Domingo (Manhã)')
      .replace(/Escala para os Domingos \(Noite\)\.\s*/i,'🌙 Domingo (Noite)')
-     .replace(/Operador\(a\) de Câmeras:.*$/i,'')
+     .replace(/Operador\(a\) de Câmeras?:.*$/i,'')
      .replace(/Corpus Christi\s*/i,'✝️ Corpus Christi')
      .replace(/Dia "D Missionário".*$/i,'🌍 Dia D Missionário')
      .replace(/CPP\s*/i,'🙏 CPP').trim();
@@ -379,17 +459,6 @@ function extractTitle(col){
   if(ib)t+=' — '+ib[1];
   return t||'Evento';
 }
-function getHeadColor(ev){
-  const t=ev.title.toLowerCase();
-  if(t.includes('quinta'))return '#5b2d8e';
-  if(t.includes('manhã'))return '#e67e22';
-  if(t.includes('noite'))return '#2c3e6b';
-  if(t.includes('sexta'))return '#1a6b4a';
-  if(t.includes('corpus'))return '#8e2d2d';
-  if(t.includes('quarta'))return '#1a4a6b';
-  return '#2d5a8e';
-}
-function getOrdinal(n){return['1°','2°','3°','4°','5°','6°','7°','8°'][n-1]||n+'°';}
 
 function processData(csvText){
   const rows=parseCSV(csvText);
@@ -416,15 +485,14 @@ function processData(csvText){
       }
     }
     if(names.length===0)continue;
-    allEvents.push({...di,title:extractTitle(col),time:extractTime(col),names,colHeader:col});
+    allEvents.push({...di,title:extractTitle(col),time:extractTime(col),specialTime:extractSpecialTime(col),names,colHeader:col});
   }
   allEvents.sort((a,b)=>{
     const da=new Date(a.year,a.month,a.day),db=new Date(b.year,b.month,b.day);
     return da-db||(a.time||'00:00').localeCompare(b.time||'00:00');
   });
-  // set view to first month with data
   if(allEvents.length>0){currentYear=allEvents[0].year;currentMonth=allEvents[0].month;}
-  selectedDay=null; batchDays=[]; savedBatches=[];
+  selectedDay=null;batchDays=[];savedBatches=[];cardColors={};cardTimes={};
   buildUI();
 }
 
@@ -448,9 +516,7 @@ function buildCalendar(){
     const cnt=evByDay[d]||0;
     if(cnt>0){
       el.classList.add('has-event');
-      // check if in batch
-      const inB=batchDays.some(b=>b.day===d&&b.month===currentMonth&&b.year===currentYear);
-      if(inB)el.classList.add('in-batch');
+      if(batchDays.some(b=>b.day===d&&b.month===currentMonth&&b.year===currentYear))el.classList.add('in-batch');
       el.onclick=()=>toggleBatchDay(d);
     }
     if(selectedDay&&selectedDay.day===d&&selectedDay.month===currentMonth&&selectedDay.year===currentYear)el.classList.add('selected');
@@ -464,16 +530,13 @@ function buildCalendar(){
 }
 
 // ══════════════════════════════════════════════════════════
-// BATCH MANAGEMENT
+// BATCH
 // ══════════════════════════════════════════════════════════
 function toggleBatchDay(day){
-  const key={day,month:currentMonth,year:currentYear};
   const idx=batchDays.findIndex(b=>b.day===day&&b.month===currentMonth&&b.year===currentYear);
-  if(idx>=0){
-    batchDays.splice(idx,1);
-  }else{
-    batchDays.push(key);
-    // keep sorted
+  if(idx>=0) batchDays.splice(idx,1);
+  else{
+    batchDays.push({day,month:currentMonth,year:currentYear});
     batchDays.sort((a,b)=>new Date(a.year,a.month,a.day)-new Date(b.year,b.month,b.day));
   }
   selectedDay={day,month:currentMonth,year:currentYear};
@@ -482,8 +545,6 @@ function toggleBatchDay(day){
 
 function removeBatchDay(day,month,year){
   batchDays=batchDays.filter(b=>!(b.day===day&&b.month===month&&b.year===year));
-  if(selectedDay&&selectedDay.day===day&&selectedDay.month===month&&selectedDay.year===year)
-    selectedDay=batchDays.length>0?batchDays[batchDays.length-1]:null;
   buildUI();
 }
 
@@ -491,9 +552,14 @@ function clearBatch(){batchDays=[];selectedDay=null;buildUI();}
 
 function deleteSavedBatch(idx){
   savedBatches.splice(idx,1);
-  // rebuild global indices in wizardData & batchEvents
   rebuildGlobalState();
   renderFullPreview();
+  buildUI();
+}
+
+function clearAllSaved(){
+  savedBatches=[];batchEvents=[];wizardData={};
+  document.getElementById('previewSection').classList.add('hidden');
   buildUI();
 }
 
@@ -518,7 +584,7 @@ function buildSchedule(){
           <div class="day-header-name">${dow}</div>
           <div class="day-header-full">${PT_MONTHS[selectedDay.month]} de ${selectedDay.year} — ${dayEvents.length} evento${dayEvents.length!==1?'s':''}</div>
         </div>
-        <div style="margin-left:auto;display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end;align-items:center">
+        <div style="margin-left:auto;display:flex;gap:8px;flex-wrap:wrap;align-items:center">
           ${inBatch?`<span style="font-size:.72rem;color:#7de8c8">✅ No lote</span>`:''}
           <button class="back-btn" onclick="clearDay()">← Ver mês todo</button>
         </div>
@@ -527,18 +593,17 @@ function buildSchedule(){
     document.getElementById('pdfBtnWrap').style.display='block';
   }else{
     const monthEvents=allEvents.filter(e=>e.month===currentMonth&&e.year===currentYear);
-    if(monthEvents.length===0){content.innerHTML=`<div class="no-data-month"><span class="icon">🗓️</span>Nenhum evento para ${PT_MONTHS[currentMonth]} de ${currentYear}.</div>`;return;}
+    if(monthEvents.length===0){content.innerHTML=`<div class="no-data-month">🗓️ Nenhum evento para ${PT_MONTHS[currentMonth]} de ${currentYear}.</div>`;return;}
     const byDay={};
     for(const ev of monthEvents){if(!byDay[ev.day])byDay[ev.day]=[];byDay[ev.day].push(ev);}
     const allNames=new Set(monthEvents.flatMap(e=>e.names));
     let html=`<div class="stats-bar">
       <div class="stat-chip">📅 <span>${monthEvents.length}</span> eventos</div>
       <div class="stat-chip">👥 <span>${allNames.size}</span> voluntários</div>
-      <div class="stat-chip">📆 <span>${Object.keys(byDay).length}</span> dias com escala</div>
+      <div class="stat-chip">📆 <span>${Object.keys(byDay).length}</span> dias</div>
     </div>`;
     for(const day of Object.keys(byDay).map(Number).sort((a,b)=>a-b)){
-      const dateObj=new Date(currentYear,currentMonth,day);
-      const dow=PT_DAYS_FULL[dateObj.getDay()];
+      const dow=PT_DAYS_FULL[new Date(currentYear,currentMonth,day).getDay()];
       html+=`<div class="section-title">📆 ${String(day).padStart(2,'0')} de ${PT_MONTHS[currentMonth]} — ${dow}</div>`;
       html+=`<div class="cards-grid">${byDay[day].map(renderCard).join('')}</div><div style="height:20px"></div>`;
     }
@@ -549,15 +614,14 @@ function buildSchedule(){
 
 function renderBatchBar(){
   const bar=document.getElementById('batchBar');
-  // saved batches panel (always shown if any saved)
   let savedHtml='';
   if(savedBatches.length>0){
     const pills=savedBatches.map((b,i)=>`
       <span class="saved-batch-pill">
-        <span class="sb-icon">${b.icon}</span>
+        <span>${b.icon}</span>
         <span class="sb-label">${b.label}</span>
         <span class="sb-count">${b.events.length} evento${b.events.length>1?'s':''}</span>
-        <button onclick="deleteSavedBatch(${i})" title="Remover lote">✕</button>
+        <button onclick="deleteSavedBatch(${i})">✕</button>
       </span>`).join('');
     savedHtml=`<div class="saved-batches-bar">
       <span class="saved-label">📌 Lotes salvos:</span>
@@ -565,17 +629,11 @@ function renderBatchBar(){
       <button class="btn-clear-all" onclick="clearAllSaved()">🗑️ Limpar tudo</button>
     </div>`;
   }
-
-  if(batchDays.length===0){
-    bar.innerHTML=savedHtml;
-    bar.style.display=savedHtml?'block':'none';
-    bar.className='';
-    return;
-  }
+  if(batchDays.length===0){bar.innerHTML=savedHtml;bar.style.display=savedHtml?'block':'none';return;}
   const chips=batchDays.map(b=>`
     <span class="batch-day-chip">
       ${String(b.day).padStart(2,'0')}/${String(b.month+1).padStart(2,'0')}
-      <button onclick="removeBatchDay(${b.day},${b.month},${b.year})" title="Remover">✕</button>
+      <button onclick="removeBatchDay(${b.day},${b.month},${b.year})">✕</button>
     </span>`).join('');
   bar.innerHTML=savedHtml+`<div class="batch-bar-inner">
     <div class="batch-count">🗂️ Lote atual: ${batchDays.length} dia${batchDays.length>1?'s':''}</div>
@@ -584,7 +642,6 @@ function renderBatchBar(){
     <button class="btn-build-batch" onclick="launchBatchWizard()">📋 Montar Escala do Lote</button>
   </div>`;
   bar.style.display='block';
-  bar.className='';
 }
 
 function clearDay(){selectedDay=null;buildUI();}
@@ -593,9 +650,11 @@ function renderCard(ev){
   const namesHtml=ev.names.map(n=>{
     const nc=nameColors[n]!==undefined?nameColors[n]:0;
     const safe=n.trim().replace(/'/g,"\\'");
-    return `<span class="name-tag nc-${nc}" onclick="copyName('${safe}',this)" title="Copiar">${n.trim()}</span>`;
+    return `<span class="name-tag nc-${nc}" onclick="copyName('${safe}',this)" title="Clique para copiar">${n.trim()}</span>`;
   }).join('');
-  const timeHtml=ev.time?`<div class="card-time">${ev.time}hs</div>`:'';
+  const timeHtml=ev.time
+    ?`<div class="card-time">${ev.time}hs${ev.specialTime?` <span style="color:var(--red);font-size:.7rem">⚠️ Solenidade: ${ev.specialTime}hs</span>`:''}</div>`
+    :'';
   return `<div class="event-card">
     <div class="card-date">📅 ${String(ev.day).padStart(2,'0')}/${String(ev.month+1).padStart(2,'0')}/${ev.year}</div>
     <div class="card-title">${ev.title}</div>${timeHtml}
@@ -604,7 +663,7 @@ function renderCard(ev){
 }
 
 // ══════════════════════════════════════════════════════════
-// WIZARD — percorre todos os eventos do lote em sequência
+// WIZARD
 // ══════════════════════════════════════════════════════════
 function launchBatchWizard(){
   if(batchDays.length===0)return;
@@ -614,28 +673,20 @@ function launchBatchWizard(){
     batchEvents.push(...evs);
   }
   if(batchEvents.length===0)return;
-
-  // detect batch type for label
   const titles=batchEvents.map(e=>e.title.toLowerCase());
-  let icon='📅', typeLabel='Lote';
-  if(titles.every(t=>t.includes('domingo')&&t.includes('manhã')))      {icon='☀️';typeLabel='Domingos (Manhã)';}
-  else if(titles.every(t=>t.includes('domingo')&&t.includes('noite'))) {icon='🌙';typeLabel='Domingos (Noite)';}
-  else if(titles.every(t=>t.includes('domingo')))                       {icon='🗓️';typeLabel='Domingos';}
-  else if(titles.every(t=>t.includes('quinta')))                        {icon='🔵';typeLabel='Quintas-feiras';}
-  else if(titles.every(t=>t.includes('sexta')))                         {icon='🟢';typeLabel='Sextas-feiras';}
-  else if(titles.every(t=>t.includes('quarta')))                        {icon='🟣';typeLabel='Quartas-feiras';}
+  let icon='📅',typeLabel='Lote';
+  if(titles.every(t=>t.includes('domingo')&&t.includes('manhã'))){icon='☀️';typeLabel='Domingos (Manhã)';}
+  else if(titles.every(t=>t.includes('domingo')&&t.includes('noite'))){icon='🌙';typeLabel='Domingos (Noite)';}
+  else if(titles.every(t=>t.includes('domingo'))){icon='🗓️';typeLabel='Domingos';}
+  else if(titles.every(t=>t.includes('quinta'))){icon='🔵';typeLabel='Quintas-feiras';}
+  else if(titles.every(t=>t.includes('sexta'))){icon='🟢';typeLabel='Sextas-feiras';}
+  else if(titles.every(t=>t.includes('quarta'))){icon='🟣';typeLabel='Quartas-feiras';}
+  else if(titles.every(t=>t.includes('sábado'))){icon='🎵';typeLabel='Sábados';}
   const months=[...new Set(batchEvents.map(e=>PT_MONTHS[e.month]))].join('/');
-  const currentBatchMeta={icon, label:`${typeLabel} — ${months}`, events:[...batchEvents]};
-
-  wizardData={};
-  wizardQueue=[];
-  batchEvents.forEach((ev,gi)=>{
-    wizardData[gi]={};
-    SLOTS.forEach(slot=>wizardQueue.push({ev,gi,slot}));
-  });
+  window._pendingBatchMeta={icon,label:`${typeLabel} — ${months}`,events:[...batchEvents]};
+  wizardData={};wizardQueue=[];
+  batchEvents.forEach((ev,gi)=>{wizardData[gi]={};SLOTS.forEach(slot=>wizardQueue.push({ev,gi,slot}));});
   wizardQueueIdx=0;
-  // store meta for saving later
-  window._pendingBatchMeta=currentBatchMeta;
   document.getElementById('wizardModal').classList.remove('hidden');
   renderWizardStep();
 }
@@ -643,59 +694,41 @@ function launchBatchWizard(){
 function renderWizardStep(){
   if(wizardQueueIdx>=wizardQueue.length){
     closeWizard();
-    // save this batch
     if(window._pendingBatchMeta){
-      savedBatches.push({
-        ...window._pendingBatchMeta,
-        data: JSON.parse(JSON.stringify(wizardData))
-      });
+      savedBatches.push({...window._pendingBatchMeta,data:JSON.parse(JSON.stringify(wizardData))});
       window._pendingBatchMeta=null;
     }
-    batchDays=[];
-    selectedDay=null;
+    batchDays=[];selectedDay=null;
     buildUI();
     renderFullPreview();
     return;
   }
   const step=wizardQueue[wizardQueueIdx];
   const slotIdx=SLOTS.indexOf(step.slot);
-  const totalEvents=batchEvents.length;
-  const evNum=step.gi+1;
-
-  // progress dots = 6 slots
+  const evNum=step.gi+1,evTotal=batchEvents.length;
   document.getElementById('progressEventLabel').textContent=
-    `Evento ${evNum} de ${totalEvents}: ${step.ev.title.replace(/📷|🌅|🌙|✝️|🌍|🙏|📸/g,'').replace(/—.*/,'').trim()}`;
-  const bar=document.getElementById('progressBar');
-  bar.innerHTML=SLOTS.map((_,i)=>`<div class="progress-dot ${i<slotIdx?'done':i===slotIdx?'active':''}"></div>`).join('');
-
+    `Evento ${evNum} de ${evTotal}: ${step.ev.title.replace(/📷|🌅|🌙|✝️|🌍|🙏|📸/g,'').replace(/—.*/,'').trim()}`;
+  document.getElementById('progressBar').innerHTML=
+    SLOTS.map((_,i)=>`<div class="progress-dot ${i<slotIdx?'done':i===slotIdx?'active':''}"></div>`).join('');
   document.getElementById('modalStepLabel').textContent=`Cargo ${slotIdx+1} de ${SLOTS.length}`;
   document.getElementById('modalQuestion').textContent=step.slot;
   const dateStr=`${String(step.ev.day).padStart(2,'0')}/${String(step.ev.month+1).padStart(2,'0')} ${step.ev.time?'— '+step.ev.time+'hs':''}`;
   document.getElementById('modalPerson').innerHTML=`Data: <strong>${dateStr}</strong>`;
-
-  // chips
   const already=wizardData[step.gi][step.slot];
-  const chips=document.getElementById('modalChips');
-  chips.innerHTML=step.ev.names.map(n=>`
+  document.getElementById('modalChips').innerHTML=step.ev.names.map(n=>`
     <button class="name-chip ${already&&already===n.trim()?'selected':''}"
       onclick="wizardPickName('${n.trim().replace(/'/g,"\\'")}',this)">${n.trim()}</button>`).join('');
 }
 
 function wizardPickName(name,btn){
-  document.querySelectorAll('#modalChips .name-chip').forEach(b=>{b.classList.remove('selected');});
+  document.querySelectorAll('#modalChips .name-chip').forEach(b=>b.classList.remove('selected'));
   btn.classList.add('selected');
-  const step=wizardQueue[wizardQueueIdx];
-  wizardData[step.gi][step.slot]=name;
+  wizardData[wizardQueue[wizardQueueIdx].gi][wizardQueue[wizardQueueIdx].slot]=name;
 }
 
 function wizardAnswer(yes){
   const step=wizardQueue[wizardQueueIdx];
-  if(yes){
-    if(!wizardData[step.gi][step.slot])
-      wizardData[step.gi][step.slot]=step.ev.names[0]||'—';
-  }else{
-    wizardData[step.gi][step.slot]='—';
-  }
+  wizardData[step.gi][step.slot]=yes?(wizardData[step.gi][step.slot]||step.ev.names[0]||'—'):'—';
   wizardQueueIdx++;
   renderWizardStep();
 }
@@ -703,129 +736,107 @@ function wizardAnswer(yes){
 function closeWizard(){document.getElementById('wizardModal').classList.add('hidden');}
 
 // ══════════════════════════════════════════════════════════
-// PREVIEW — todos os lotes salvos, agrupados por tipo
+// PREVIEW — todos os lotes salvos
 // ══════════════════════════════════════════════════════════
 function rebuildGlobalState(){
-  // rebuild batchEvents and wizardData from savedBatches for edit support
-  batchEvents=[];
-  wizardData={};
-  let gi=0;
+  batchEvents=[];wizardData={};let gi=0;
   for(const sb of savedBatches){
-    for(const ev of sb.events){
-      batchEvents.push(ev);
-      wizardData[gi]=sb.data[sb.events.indexOf(ev)]||{};
-      gi++;
-    }
+    sb.events.forEach((ev,li)=>{batchEvents.push(ev);wizardData[gi]=sb.data[li]||{};gi++;});
   }
-}
-
-function clearAllSaved(){
-  savedBatches=[];batchEvents=[];wizardData={};
-  document.getElementById('previewSection').classList.add('hidden');
-  buildUI();
 }
 
 function renderFullPreview(){
   if(savedBatches.length===0){document.getElementById('previewSection').classList.add('hidden');return;}
   rebuildGlobalState();
-
   const section=document.getElementById('previewSection');
   const preview=document.getElementById('escalaPreview');
   section.classList.remove('hidden');
   section.scrollIntoView({behavior:'smooth',block:'start'});
-
   const allMonths=[...new Set(batchEvents.map(e=>PT_MONTHS[e.month]+' de '+e.year))];
   const titleStr=allMonths.length===1?'Escala comum de '+allMonths[0]:'Escala PASCOM — '+allMonths.join(' · ');
-
   const COLS=4;
-  let bodyHtml='';
-  let gi=0;
-
+  let bodyHtml='';let gi=0;
   savedBatches.forEach((sb,sbIdx)=>{
-    // group separator label
     bodyHtml+=`<div class="prev-group-label">${sb.icon} ${sb.label}</div>`;
-    const evs=sb.events;
-    for(let i=0;i<evs.length;i+=COLS){
-      const rowEvs=evs.slice(i,i+COLS);
-      const cols=rowEvs.length;
+    for(let i=0;i<sb.events.length;i+=COLS){
+      const rowEvs=sb.events.slice(i,i+COLS);
       let blocks='';
-      rowEvs.forEach((ev,li)=>{
-        const globalIdx=gi+i+li;
-        blocks+=buildBlock(ev,globalIdx);
-      });
-      bodyHtml+=`<div class="prev-row-group" style="grid-template-columns:repeat(${cols},1fr)">${blocks}</div>`;
-      if(i+COLS<evs.length)bodyHtml+='<div style="height:8px"></div>';
+      rowEvs.forEach((ev,li)=>{blocks+=buildBlock(ev,gi+i+li);});
+      bodyHtml+=`<div class="prev-row-group" style="grid-template-columns:repeat(${rowEvs.length},1fr)">${blocks}</div>`;
+      if(i+COLS<sb.events.length)bodyHtml+='<div style="height:8px"></div>';
     }
-    gi+=evs.length;
+    gi+=sb.events.length;
     if(sbIdx<savedBatches.length-1)bodyHtml+='<div style="height:16px"></div>';
   });
+  const titleInput=document.getElementById('previewTitleInput');
+  if(titleInput&&!titleInput.value) titleInput.value=titleStr;
+  const titleText=titleInput&&titleInput.value.trim()?titleInput.value.trim():titleStr;
+  const titleColor=document.querySelector('.tc-btn.active')?.dataset.tc||'#ffffff';
+  const barColor=getCurrentBarColor();
 
   preview.innerHTML=`
     <div class="prev-header">
-      <div class="prev-header-logo"><span class="lg-icon">📺</span>WEB TV<br>SANT'ANA</div>
-      <div class="prev-header-center">
-        <div class="parish">PARÓQUIA SENHORA SANT'ANA</div>
-        <div class="parish-motto">"TUDO PARA A MAIOR GLÓRIA DE DEUS"</div>
+      <div class="prev-header-center" style="flex:1;text-align:center;padding:10px 0">
+        <div class="parish">PASTORAL DA COMUNICAÇÃO — PASCOM</div>
+        <div class="parish-sub">Paróquia Senhora Sant'Ana</div>
       </div>
-      <div class="prev-header-logo"><span class="lg-icon">📡</span>PASCOM<br><small style="font-size:.55rem">Paróquia Senhora Sant'Ana</small></div>
     </div>
-    <div class="prev-title-bar"><h2>${titleStr}</h2></div>
+    <div class="prev-title-bar" style="background:${barColor}"><h2 style="color:${titleColor}">${titleText}</h2></div>
     <div class="prev-body">${bodyHtml}</div>
-    <div class="prev-footer"><div class="footer-quote">"Tudo para maior glória de Deus!"</div></div>`;
+    <div class="prev-footer" style="background:${barColor}"><div class="footer-quote">"Tudo para maior glória de Deus!"</div></div>`;
 }
 
-// keep old name as alias for edit refresh
-function renderPreview(){renderFullPreview();}
+// ── AJUSTE 2: sem Cabeamento/Revisão · AJUSTE 3: horário no título ──
+const LC_COLORS={
+  'verde':   {bg:'#2e7d32', label:'Verde'},
+  'branco':  {bg:'#b8a000', label:'Branco'},
+  'vermelho':{bg:'#b71c1c', label:'Vermelho'},
+  'roxo':    {bg:'#6a1b9a', label:'Roxo'},
+  'rosa':    {bg:'#c2185b', label:'Rosa'},
+};
 
 function buildBlock(ev,gi){
   const slots=wizardData[gi]||{};
-  const headColor=getHeadColor(ev);
+  // cor individual sobrepõe global; global sobrepõe getHeadColor
+  const globalColor=document.getElementById('escalaPreview')?.className.match(/lc-(\w+)/)?.[1];
+  const indivColor=cardColors[gi];
+  const activeColor=indivColor||globalColor;
+  const hc=activeColor&&LC_COLORS[activeColor]?LC_COLORS[activeColor].bg:getHeadColor(ev);
+
   const titleClean=ev.title.replace(/📷|🌅|🌙|✝️|🌍|🙏|📸/g,'').replace(/—.*/,'').trim().toUpperCase();
   const timeIcon=ev.title.includes('Manhã')?'☀️':ev.title.includes('Noite')?'🌙':'';
   const dateStr=`${String(ev.day).padStart(2,'0')}/${String(ev.month+1).padStart(2,'0')}`;
-  const dirVal=[slots['Diretor 1'],slots['Diretor 2']].filter(v=>v&&v!=='—').join(' e ')||'—';
-
+  const displayTime=cardTimes[gi]||(ev.specialTime||ev.time);
   const slotRows=SLOTS.map(slot=>{
     const val=slots[slot]||'—';
-    const isEmpty=val==='—';
     return `<div class="prev-row">
       <div class="prev-row-label">${slot}</div>
-      <div class="prev-row-value${isEmpty?' empty':''}"
-        onclick="openEditModal(${gi},'${slot}',this)"
-        title="Clique para editar">${val}</div>
+      <div class="prev-row-value${val==='—'?' empty':''}"
+        onclick="openEditModal(${gi},'${slot}')" title="Clique para editar">${val}</div>
     </div>`;
   }).join('');
-
+  const colorDot=indivColor?`<span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#fff;opacity:.7;margin-left:5px;vertical-align:middle" title="Cor individual: ${LC_COLORS[indivColor].label}"></span>`:'';
+  const horarioBg=activeColor&&LC_COLORS[activeColor]?LC_COLORS[activeColor].bg:'#0e7a5a';
   return `<div class="prev-event-block" id="block-${gi}">
-    <div class="prev-event-head" style="background:${headColor}">
-      <div class="ev-weekday">${timeIcon} ${titleClean} (${dateStr})</div>
-      ${ev.time?`<div class="ev-date-sub">Horário (${ev.time}hs)</div>`:''}
+    <div class="prev-event-head" style="background:${hc};cursor:pointer" onclick="openEditModal(${gi},'__color__')" title="Clique para mudar a cor">
+      <div class="ev-weekday">${timeIcon} ${titleClean} (${dateStr}${ev.time?' — '+ev.time+'hs':''})${colorDot}</div>
+      ${ev.specialTime?`<div class="ev-date-sub">⚠️ Solenidade: ${ev.specialTime}hs</div>`:''}
     </div>
     <div class="prev-event-rows">
-      <div class="prev-row cabeamento">
-        <div class="prev-row-label">Cabeamento</div>
-        <div class="prev-row-value empty" onclick="openEditModal(${gi},'Cabeamento',this)" title="Clique para editar">—</div>
-      </div>
-      <div class="prev-row">
-        <div class="prev-row-label">Revisão</div>
-        <div class="prev-row-value empty" onclick="openEditModal(${gi},'Revisão',this)" title="Clique para editar">—</div>
-      </div>
-      ${ev.time?`<div class="prev-row horario"><div class="prev-row-label">Horário</div><div class="prev-row-value">${ev.time}hs</div></div>`:''}
+      ${displayTime?`<div class="prev-row horario" onclick="openEditModal(${gi},'__time__')" title="Clique para editar horário">
+        <div class="prev-row-label" style="background:${horarioBg}">Horário</div>
+        <div class="prev-row-value" style="background:${horarioBg}">${displayTime}hs${cardTimes[gi]?' ✏️':''}</div>
+      </div>`:''}
       ${slotRows}
     </div>
   </div>`;
 }
 
 function refreshBlock(gi){
-  // update data back into the right savedBatch
   let offset=0;
   for(const sb of savedBatches){
     const len=sb.events.length;
-    if(gi<offset+len){
-      const localIdx=gi-offset;
-      sb.data[localIdx]=wizardData[gi];
-      break;
-    }
+    if(gi<offset+len){sb.data[gi-offset]=wizardData[gi];break;}
     offset+=len;
   }
   renderFullPreview();
@@ -834,94 +845,152 @@ function refreshBlock(gi){
 // ══════════════════════════════════════════════════════════
 // INLINE EDIT
 // ══════════════════════════════════════════════════════════
-let editTarget=null; // the DOM element clicked
-
-function openEditModal(gi, slot, el){
-  const ev=batchEvents[gi];
-  if(!ev)return;
+function openEditModal(gi,slot){
+  const ev=batchEvents[gi];if(!ev)return;
   editCtx={gi,slot,names:ev.names};
-  editTarget=el;
+  const ds=`${String(ev.day).padStart(2,'0')}/${String(ev.month+1).padStart(2,'0')} — ${ev.title.replace(/📷|🌅|🌙|✝️|🌍|🙏|📸/g,'').replace(/—.*/,'').trim()}`;
 
+  // ── Modo cor ─────────────────────────────────────────────
+  if(slot==='__color__'){
+    document.getElementById('editModalTitle').textContent='🎨 Cor do cabeçalho';
+    document.getElementById('editModalSub').textContent=ds;
+    const current=cardColors[gi]||'';
+    const opts=[
+      {key:'',dot:'linear-gradient(135deg,#0e7a5a,#16a87a)',label:'Padrão (automático)'},
+      {key:'verde',dot:'#2e7d32',label:'Verde — Tempo Comum'},
+      {key:'branco',dot:'#b8a000',label:'Branco/Dourado — Festas'},
+      {key:'vermelho',dot:'#b71c1c',label:'Vermelho — Pentecostes/Mártires'},
+      {key:'roxo',dot:'#6a1b9a',label:'Roxo — Advento/Quaresma'},
+      {key:'rosa',dot:'#c2185b',label:'Rosa — 3º Advento/4º Quaresma'},
+    ];
+    document.getElementById('editChips').innerHTML=opts.map(o=>`
+      <button class="edit-chip color-chip ${o.key===current?'selected':''}"
+        data-color-key="${o.key}" onclick="selectEditChip('${o.key}',this)"
+        style="display:flex;align-items:center;gap:7px;width:100%;border-radius:10px;margin-bottom:3px">
+        <span style="width:14px;height:14px;border-radius:50%;background:${o.dot};display:inline-block;flex-shrink:0;border:1px solid rgba(0,0,0,.15)"></span>${o.label}
+      </button>`).join('');
+    document.getElementById('editManual').style.display='none';
+    document.querySelector('.edit-confirm').onclick=confirmColorEdit;
+    document.querySelector('.edit-dash').style.display='none';
+    document.getElementById('editModal').classList.remove('hidden');
+    return;
+  }
+
+  // ── Modo horário ─────────────────────────────────────────
+  if(slot==='__time__'){
+    document.getElementById('editModalTitle').textContent='⏰ Editar Horário';
+    document.getElementById('editModalSub').textContent=ds;
+    const current=cardTimes[gi]||(ev.specialTime||ev.time)||'';
+    const sugg=['07:30','08:00','16:30','17:00','18:00','18:30','19:00','19:30'];
+    document.getElementById('editChips').innerHTML=sugg.map(h=>`
+      <button class="edit-chip ${h===current?'selected':''}"
+        onclick="selectEditChip('${h}',this)">${h}hs</button>`).join('');
+    document.getElementById('editManual').style.display='';
+    document.getElementById('editManual').value=current;
+    document.getElementById('editManual').placeholder='Ex: 18:30';
+    document.querySelector('.edit-confirm').onclick=confirmTimeEdit;
+    const dash=document.querySelector('.edit-dash');
+    dash.style.display='';dash.textContent='↩️ Restaurar original';
+    dash.onclick=()=>{const g=editCtx.gi;delete cardTimes[g];closeEditModal();refreshBlock(g);};
+    document.getElementById('editModal').classList.remove('hidden');
+    document.getElementById('editManual').focus();
+    return;
+  }
+
+  // ── Modo cargo (padrão) ──────────────────────────────────
   document.getElementById('editModalTitle').textContent=`Editar: ${slot}`;
-  const dateStr=`${String(ev.day).padStart(2,'0')}/${String(ev.month+1).padStart(2,'0')} ${ev.time?'— '+ev.time+'hs':''}`;
-  document.getElementById('editModalSub').textContent=ev.title.replace(/📷|🌅|🌙|✝️|🌍|🙏|📸/g,'').replace(/—.*/,'').trim()+' · '+dateStr;
-
+  document.getElementById('editModalSub').textContent=ds;
   const current=(wizardData[gi]||{})[slot]||'—';
+  document.getElementById('editManual').style.display='';
   document.getElementById('editManual').value=current==='—'?'':current;
-
-  const chipsEl=document.getElementById('editChips');
-  chipsEl.innerHTML=ev.names.map(n=>`
+  document.getElementById('editManual').placeholder='Ou digite um nome manualmente...';
+  document.getElementById('editChips').innerHTML=ev.names.map(n=>`
     <button class="edit-chip ${n.trim()===current?'selected':''}"
       onclick="selectEditChip('${n.trim().replace(/'/g,"\\'")}',this)">${n.trim()}</button>`).join('');
-
+  document.querySelector('.edit-confirm').onclick=confirmEdit;
+  const dash=document.querySelector('.edit-dash');
+  dash.style.display='';dash.textContent='— Sem escalado';dash.onclick=confirmEditDash;
   document.getElementById('editModal').classList.remove('hidden');
   document.getElementById('editManual').focus();
 }
 
-function selectEditChip(name,btn){
+function selectEditChip(val,btn){
   document.querySelectorAll('.edit-chip').forEach(b=>b.classList.remove('selected'));
   btn.classList.add('selected');
-  document.getElementById('editManual').value=name;
+  if(document.getElementById('editManual').style.display!=='none')
+    document.getElementById('editManual').value=val;
 }
 
 function confirmEdit(){
   if(!editCtx)return;
-  const{gi,slot}=editCtx;
+  const gi=editCtx.gi,slot=editCtx.slot;
   const manual=document.getElementById('editManual').value.trim();
-  const selected=document.querySelector('.edit-chip.selected');
-  const val=manual||(selected?selected.textContent.trim():'—');
+  const sel=document.querySelector('.edit-chip.selected');
+  const val=manual||(sel?sel.textContent.trim():'—');
   if(!wizardData[gi])wizardData[gi]={};
   wizardData[gi][slot]=val||'—';
-  closeEditModal();
-  refreshBlock(gi);
+  closeEditModal();refreshBlock(gi);
 }
 
 function confirmEditDash(){
   if(!editCtx)return;
-  const{gi,slot}=editCtx;
+  const gi=editCtx.gi,slot=editCtx.slot;
   if(!wizardData[gi])wizardData[gi]={};
   wizardData[gi][slot]='—';
-  closeEditModal();
-  refreshBlock(gi);
+  closeEditModal();refreshBlock(gi);
+}
+
+function confirmColorEdit(){
+  if(!editCtx)return;
+  const gi=editCtx.gi;
+  const sel=document.querySelector('.edit-chip.selected');
+  const key=sel?sel.dataset.colorKey:'';
+  if(!key)delete cardColors[gi]; else cardColors[gi]=key;
+  closeEditModal();refreshBlock(gi);
+}
+
+function confirmTimeEdit(){
+  if(!editCtx)return;
+  const gi=editCtx.gi;
+  const manual=document.getElementById('editManual').value.trim();
+  const sel=document.querySelector('.edit-chip.selected');
+  const raw=manual||(sel?sel.textContent.replace('hs','').trim():'');
+  const norm=raw.replace(/h/i,':').replace(/[^\d:]/g,'');
+  if(norm)cardTimes[gi]=norm; else delete cardTimes[gi];
+  closeEditModal();refreshBlock(gi);
 }
 
 function closeEditModal(){
   document.getElementById('editModal').classList.add('hidden');
-  editCtx=null;editTarget=null;
+  document.getElementById('editManual').style.display='';
+  document.getElementById('editManual').placeholder='Ou digite um nome manualmente...';
+  document.querySelector('.edit-confirm').onclick=confirmEdit;
+  const dash=document.querySelector('.edit-dash');
+  dash.textContent='— Sem escalado';dash.onclick=confirmEditDash;dash.style.display='';
+  editCtx=null;
 }
 
 // ══════════════════════════════════════════════════════════
 // EXPORT
 // ══════════════════════════════════════════════════════════
 function exportPNG(){
-  const el=document.getElementById('escalaPreview');
-  html2canvas(el,{scale:2,useCORS:true,backgroundColor:'#0a8c6a'}).then(canvas=>{
-    const link=document.createElement('a');
-    link.download='Escala_PASCOM.png';
-    link.href=canvas.toDataURL('image/png');
-    link.click();
+  html2canvas(document.getElementById('escalaPreview'),{scale:2,useCORS:true,backgroundColor:'#0a8c6a'}).then(canvas=>{
+    const a=document.createElement('a');a.download='Escala_PASCOM.png';a.href=canvas.toDataURL('image/png');a.click();
   });
 }
 function exportPDF(){
-  const el=document.getElementById('escalaPreview');
-  html2canvas(el,{scale:2,useCORS:true,backgroundColor:'#0a8c6a'}).then(canvas=>{
-    const imgData=canvas.toDataURL('image/png');
-    const w=canvas.width,h=canvas.height,ratio=w/h;
-    const pw=210,ph=Math.round(pw/ratio);
+  html2canvas(document.getElementById('escalaPreview'),{scale:2,useCORS:true,backgroundColor:'#0a8c6a'}).then(canvas=>{
+    const img=canvas.toDataURL('image/png'),w=canvas.width,h=canvas.height,pw=210,ph=Math.round(pw/(w/h));
     const win=window.open('','_blank');
     win.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Escala PASCOM</title>
-    <style>*{margin:0;padding:0}body{background:#fff}@media print{@page{margin:0;size:${pw}mm ${ph}mm}img{width:100%;height:auto}}</style>
-    </head><body><img src="${imgData}" style="width:100%;height:auto"></body></html>`);
-    win.document.close();
-    win.onload=()=>setTimeout(()=>win.print(),500);
+    <style>*{margin:0;padding:0}@media print{@page{margin:0;size:${pw}mm ${ph}mm}img{width:100%}}</style>
+    </head><body><img src="${img}"></body></html>`);
+    win.document.close();win.onload=()=>setTimeout(()=>win.print(),500);
   });
 }
 
-// ══════════════════════════════════════════════════════════
-// GENERATE PDF (simple month view)
-// ══════════════════════════════════════════════════════════
 function generatePDF(){
-  const btn=document.getElementById('pdfBtn');
+  const btn=document.getElementById('pdfBtnWrap').querySelector('button');
   btn.textContent='⏳ Gerando...';btn.disabled=true;
   const monthName=PT_MONTHS[currentMonth]+' '+currentYear;
   const evs=selectedDay?allEvents.filter(e=>e.day===selectedDay.day&&e.month===selectedDay.month&&e.year===selectedDay.year):allEvents.filter(e=>e.month===currentMonth&&e.year===currentYear);
@@ -937,13 +1006,57 @@ function generatePDF(){
       cards+=`<div class="pc"><div class="pcd">📅 ${String(ev.day).padStart(2,'0')}/${String(ev.month+1).padStart(2,'0')}/${ev.year}</div><div class="pct">${ev.title}</div>${ev.time?`<div class="pcti">⏰ ${ev.time}hs</div>`:''}<div style="margin-top:8px">${nh}</div></div>`;
     }
   }
-  const html=`<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><title>Escala PASCOM</title><link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Lato:wght@300;400;700&display=swap" rel="stylesheet"><style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:'Lato',sans-serif;background:#0d0f1a;color:#f0ead8;padding:30px 40px}.ph{text-align:center;border-bottom:2px solid #c9a84c44;padding-bottom:20px;margin-bottom:28px}.pi{font-size:2rem;display:block;margin-bottom:8px}.pt{font-family:'Cinzel',serif;font-size:22px;color:#c9a84c;letter-spacing:.12em}.ps{font-size:11px;color:#8a8fa8;letter-spacing:.2em;text-transform:uppercase;margin-top:4px}.pm{font-family:'Cinzel',serif;font-size:10px;color:#f0d080;font-style:italic;margin-top:3px}.pmn{font-family:'Cinzel',serif;font-size:13px;color:#f0d080;margin-top:10px;letter-spacing:.1em}.dgt{font-family:'Cinzel',serif;font-size:12px;color:#c9a84c;letter-spacing:.12em;text-transform:uppercase;margin:20px 0 10px;padding-bottom:5px;border-bottom:1px solid #c9a84c30}.pc{background:#141728;border:1px solid #c9a84c28;border-radius:10px;padding:14px 16px;margin-bottom:10px;break-inside:avoid;position:relative;overflow:hidden}.pc::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,#8a6f2e,#f0d080)}.pcd{font-size:10px;color:#c9a84c;font-family:'Cinzel',serif;margin-bottom:3px}.pct{font-size:13px;font-weight:700;color:#f0ead8;margin-bottom:2px}.pcti{font-size:11px;color:#8a8fa8;margin-bottom:4px}.pf{text-align:center;margin-top:36px;font-size:10px;color:#8a8fa8;letter-spacing:.1em;border-top:1px solid #c9a84c22;padding-top:14px}@media print{body{-webkit-print-color-adjust:exact;print-color-adjust:exact}}</style></head><body><div class="ph"><span class="pi">📖</span><div class="pt">ESCALA DA PASCOM</div><div class="ps">Pastoral da Comunicação</div><div class="pm">Tudo para maior glória de Deus</div><div class="pmn">${selectedDay?`${String(selectedDay.day).padStart(2,'0')} de ${PT_MONTHS[selectedDay.month]} de ${selectedDay.year}`:monthName}</div></div>${cards}<div class="pf">Gerado em ${new Date().toLocaleDateString('pt-BR')} às ${new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})}</div></body></html>`;
+  const html=`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Escala PASCOM</title><link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Lato:wght@300;400;700&display=swap" rel="stylesheet"><style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:'Lato',sans-serif;background:#0d0f1a;color:#f0ead8;padding:30px 40px}.ph{text-align:center;border-bottom:2px solid #c9a84c44;padding-bottom:20px;margin-bottom:28px}.pi{font-size:2rem;display:block;margin-bottom:8px}.pt{font-family:'Cinzel',serif;font-size:22px;color:#c9a84c;letter-spacing:.12em}.ps{font-size:11px;color:#8a8fa8;letter-spacing:.2em;text-transform:uppercase;margin-top:4px}.pm{font-family:'Cinzel',serif;font-size:10px;color:#f0d080;font-style:italic;margin-top:3px}.pmn{font-family:'Cinzel',serif;font-size:13px;color:#f0d080;margin-top:10px}.dgt{font-family:'Cinzel',serif;font-size:12px;color:#c9a84c;text-transform:uppercase;margin:20px 0 10px;padding-bottom:5px;border-bottom:1px solid #c9a84c30}.pc{background:#141728;border:1px solid #c9a84c28;border-radius:10px;padding:14px 16px;margin-bottom:10px;break-inside:avoid;position:relative}.pc::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,#8a6f2e,#f0d080)}.pcd{font-size:10px;color:#c9a84c;font-family:'Cinzel',serif;margin-bottom:3px}.pct{font-size:13px;font-weight:700;color:#f0ead8;margin-bottom:2px}.pcti{font-size:11px;color:#8a8fa8;margin-bottom:4px}.pf{text-align:center;margin-top:36px;font-size:10px;color:#8a8fa8;border-top:1px solid #c9a84c22;padding-top:14px}@media print{body{-webkit-print-color-adjust:exact;print-color-adjust:exact}}</style></head><body><div class="ph"><span class="pi">📖</span><div class="pt">ESCALA DA PASCOM</div><div class="ps">Pastoral da Comunicação</div><div class="pm">Tudo para maior glória de Deus</div><div class="pmn">${selectedDay?`${String(selectedDay.day).padStart(2,'0')} de ${PT_MONTHS[selectedDay.month]} de ${selectedDay.year}`:monthName}</div></div>${cards}<div class="pf">Gerado em ${new Date().toLocaleDateString('pt-BR')}</div></body></html>`;
   const blob=new Blob([html],{type:'text/html'});
   const url=URL.createObjectURL(blob);
   const win=window.open(url,'_blank');
   if(win)win.onload=()=>setTimeout(()=>{win.print();URL.revokeObjectURL(url);},800);
   setTimeout(()=>{btn.textContent='📄 Gerar PDF desta Escala';btn.disabled=false;},1500);
 }
+
+// ══════════════════════════════════════════════════════════
+// LITURGICAL COLOR
+// ══════════════════════════════════════════════════════════
+// ══════════════════════════════════════════════════════════
+// PREVIEW CONTROLS
+// ══════════════════════════════════════════════════════════
+const BAR_COLORS={
+  padrao:'linear-gradient(135deg,#0e7a5a,#16a87a)',verde:'linear-gradient(135deg,#1b5e20,#2e7d32)',
+  dourado:'linear-gradient(135deg,#7a6000,#b8a000)',vermelho:'linear-gradient(135deg,#7f0000,#b71c1c)',
+  roxo:'linear-gradient(135deg,#4a148c,#6a1b9a)',rosa:'linear-gradient(135deg,#880e4f,#c2185b)',
+  azul:'linear-gradient(135deg,#0d1757,#1a237e)',
+};
+function getCurrentBarColor(){
+  const a=document.querySelector('[data-bar].active');
+  return BAR_COLORS[a?a.dataset.bar:'padrao']||BAR_COLORS.padrao;
+}
+function setBarColor(key,btn){
+  document.querySelectorAll('[data-bar]').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  const bar=BAR_COLORS[key]||BAR_COLORS.padrao;
+  const tb=document.querySelector('.prev-title-bar');
+  const ft=document.querySelector('.prev-footer');
+  if(tb)tb.style.background=bar;
+  if(ft)ft.style.background=bar;
+}
+function setTitleColor(color,btn){
+  document.querySelectorAll('.tc-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  const h2=document.querySelector('.prev-title-bar h2');
+  if(h2)h2.style.color=color;
+}
+function setLiturgyColor(color,btn){
+  document.querySelectorAll('[data-color]').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  const preview=document.getElementById('escalaPreview');
+  preview.className=preview.className.replace(/\blc-\w+/g,'').trim();
+  if(color!=='none')preview.classList.add('lc-'+color);
+  renderFullPreview();
+}
+document.addEventListener('DOMContentLoaded',()=>{
+  const inp=document.getElementById('previewTitleInput');
+  if(inp)inp.addEventListener('input',()=>{const h2=document.querySelector('.prev-title-bar h2');if(h2)h2.textContent=inp.value||'';});
+});
 
 // ══════════════════════════════════════════════════════════
 // COPY + TOAST
@@ -965,8 +1078,8 @@ function copyName(name,el){
 // ══════════════════════════════════════════════════════════
 // NAV + UI
 // ══════════════════════════════════════════════════════════
-function navMonth(delta){
-  currentMonth+=delta;
+function navMonth(d){
+  currentMonth+=d;
   if(currentMonth>11){currentMonth=0;currentYear++;}
   if(currentMonth<0){currentMonth=11;currentYear--;}
   selectedDay=null;buildUI();
@@ -976,19 +1089,17 @@ document.getElementById('nextMonth').onclick=()=>navMonth(1);
 
 function buildUI(){
   document.getElementById('calendarSection').classList.add('visible');
-  buildCalendar();
-  buildSchedule();
+  buildCalendar();buildSchedule();
 }
 
-// ── File Upload ──────────────────────────────────────────
 function handleFile(file){
   if(!file||!file.name.endsWith('.csv')){alert('Selecione um arquivo .csv');return;}
-  const reader=new FileReader();
-  reader.onload=e=>{
+  const r=new FileReader();
+  r.onload=e=>{
     document.getElementById('fileStatus').innerHTML=`<div class="file-loaded">✅ ${file.name} carregado</div>`;
     processData(e.target.result);
   };
-  reader.readAsText(file,'UTF-8');
+  r.readAsText(file,'UTF-8');
 }
 document.getElementById('fileInput').addEventListener('change',e=>{if(e.target.files[0])handleFile(e.target.files[0]);});
 const zone=document.getElementById('uploadZone');
