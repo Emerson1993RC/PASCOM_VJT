@@ -232,7 +232,6 @@ h1{font-family:'Cinzel',serif;font-size:clamp(1.6rem,4vw,2.6rem);color:var(--gol
 
 <div id="copyToast">✅ <span id="toastName"></span> copiado!</div>
 
-<!-- WIZARD MODAL -->
 <div class="modal-overlay hidden" id="wizardModal">
   <div class="modal-box">
     <div class="progress-outer">
@@ -250,7 +249,6 @@ h1{font-family:'Cinzel',serif;font-size:clamp(1.6rem,4vw,2.6rem);color:var(--gol
   </div>
 </div>
 
-<!-- EDIT MODAL -->
 <div class="edit-modal hidden" id="editModal">
   <div class="edit-modal-box">
     <h3 id="editModalTitle"></h3>
@@ -304,7 +302,6 @@ h1{font-family:'Cinzel',serif;font-size:clamp(1.6rem,4vw,2.6rem);color:var(--gol
       <span style="font-family:Lato,sans-serif;font-size:.72rem;color:var(--text-muted);text-transform:none;letter-spacing:0;font-weight:400"> · Clique em qualquer valor para editar</span>
     </div>
 
-    <!-- CONTROLES DO PREVIEW -->
     <div class="preview-controls">
       <div class="ctrl-row">
         <span class="ctrl-label">✏️ Título:</span>
@@ -359,7 +356,6 @@ const PT_MONTHS=['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','
 const PT_DAYS=['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
 const PT_DAYS_FULL=['Domingo','Segunda-feira','Terça-feira','Quarta-feira','Quinta-feira','Sexta-feira','Sábado'];
 
-// ── AJUSTE 1: Auxiliar adicionado ──────────────────────────
 const SLOTS=['Panasonic P','Canon','Storymaker','Fotografia','Auxiliar','Diretor 1','Diretor 2'];
 
 let allEvents=[], nameColors={};
@@ -369,8 +365,8 @@ let batchDays=[];
 let savedBatches=[];
 let wizardQueue=[], wizardQueueIdx=0;
 let wizardData={}, batchEvents=[];
-let cardColors={}; // gi → cor individual do cabeçalho do card
-let cardTimes={};  // gi → horário individual override
+let cardColors={};
+let cardTimes={};
 let editCtx=null;
 
 function getHeadColor(ev){
@@ -400,7 +396,7 @@ function parseCSV(text){
           else if(text[i]==='"'){i++;break;}
           else{f+=text[i];i++;}
         }
-        row.push(f);if(text[i]===')')i++; // Ajuste fix
+        row.push(f);if(text[i]===')')i++; 
         if(text[i]===',')i++;
       }else{
         let f='';
@@ -422,7 +418,6 @@ function extractDate(col){
   return{day,month,year};
 }
 
-// ── AJUSTE 3: horário no formato h00 + solenidade ─────────
 function extractTime(col){
   const ps=[
     /hor[aá]rio de chegada:\s*(\d{1,2})h(\d{2})/i,
@@ -436,17 +431,12 @@ function extractTime(col){
 }
 
 function extractSpecialTime(col){
-  // Só aplica se a data desta coluna coincidir com a data da exceção mencionada no texto
-  // Ex: "⚠️ Exceto no dia 04/06 — Solenidade..." só vale para [04/06/2026]
   const exceptionMatch = col.match(/exceto no dia\s+(\d{2})\/(\d{2})/i);
   if(!exceptionMatch) return null;
   const excDay=exceptionMatch[1], excMonth=exceptionMatch[2];
-  // Pega a data desta coluna (entre colchetes no final)
   const colDate = col.match(/\[(\d{2})\/(\d{2})\/(\d{4})/);
   if(!colDate) return null;
-  // Só aplica o horário especial se dia/mês coincidem com a exceção
   if(colDate[1]!==excDay || colDate[2]!==excMonth) return null;
-  // Captura o segundo horário (o da solenidade)
   const all=[...col.matchAll(/hor[aá]rio de chegada:\s*(\d{1,2})h(\d{2})/gi)];
   if(all.length>=2) return `${all[1][1]}:${all[1][2]}`;
   return null;
@@ -681,15 +671,30 @@ function launchBatchWizard(){
     batchEvents.push(...evs);
   }
   if(batchEvents.length===0)return;
+
   const titles=batchEvents.map(e=>e.title.toLowerCase());
-  let icon='📅',typeLabel='Lote';
-  if(titles.every(t=>t.includes('domingo')&&t.includes('manhã'))){icon='☀️';typeLabel='Domingos (Manhã)';}
-  else if(titles.every(t=>t.includes('domingo')&&t.includes('noite'))){icon='🌙';typeLabel='Domingos (Noite)';}
-  else if(titles.every(t=>t.includes('domingo'))){icon='🗓️';typeLabel='Domingos';}
-  else if(titles.every(t=>t.includes('quinta'))){icon='🔵';typeLabel='Quintas-feiras';}
-  else if(titles.every(t=>t.includes('sexta'))){icon='🟢';typeLabel='Sextas-feiras';}
-  else if(titles.every(t=>t.includes('quarta'))){icon='🟣';typeLabel='Quartas-feiras';}
-  else if(titles.every(t=>t.includes('sábado'))){icon='🎵';typeLabel='Sábados';}
+  let icon='🗓️', typeLabel='Lote';
+
+  // REGRA ESPECIAL: Se selecionar 10 ou mais dias, chama de FESTA
+  if(batchDays.length >= 10){
+      typeLabel = 'FESTA';
+  } else {
+      // Lógica de dia da semana se for um período normal
+      const isAllDay = (d) => batchEvents.every(e => new Date(e.year, e.month, e.day).getDay() === d);
+
+      if(isAllDay(0)){
+        if(titles.every(t=>t.includes('manhã'))) typeLabel='Domingos (Manhã)';
+        else if(titles.every(t=>t.includes('noite'))) typeLabel='Domingos (Noite)';
+        else typeLabel='Domingos';
+      }
+      else if(isAllDay(1)) typeLabel='Segundas-feiras';
+      else if(isAllDay(2)) typeLabel='Terças-feiras';
+      else if(isAllDay(3)) typeLabel='Quartas-feiras';
+      else if(isAllDay(4)) typeLabel='Quintas-feiras';
+      else if(isAllDay(5)) typeLabel='Sextas-feiras';
+      else if(isAllDay(6)) typeLabel='Sábados';
+  }
+
   const months=[...new Set(batchEvents.map(e=>PT_MONTHS[e.month]))].join('/');
   window._pendingBatchMeta={icon,label:`${typeLabel} — ${months}`,events:[...batchEvents]};
   wizardData={};wizardQueue=[];
@@ -765,7 +770,6 @@ function renderFullPreview(){
   const COLS=4;
   let bodyHtml='';let gi=0;
   savedBatches.forEach((sb,sbIdx)=>{
-    // AQUI O AJUSTE PARA DEIXAR O EMOJI FIXO DE CALENDÁRIO NO LUGAR DO .ICON
     bodyHtml+=`<div class="prev-group-label">🗓️ ${sb.label}</div>`;
     for(let i=0;i<sb.events.length;i+=COLS){
       const rowEvs=sb.events.slice(i,i+COLS);
@@ -795,7 +799,6 @@ function renderFullPreview(){
     <div class="prev-footer" style="background:${barColor}"><div class="footer-quote">"Tudo para maior glória de Deus!"</div></div>`;
 }
 
-// ── AJUSTE 2: sem Cabeamento/Revisão · AJUSTE 3: horário no título ──
 const LC_COLORS={
   'verde':   {bg:'#2e7d32', label:'Verde'},
   'branco':  {bg:'#b8a000', label:'Branco'},
@@ -806,7 +809,6 @@ const LC_COLORS={
 
 function buildBlock(ev,gi){
   const slots=wizardData[gi]||{};
-  // cor individual sobrepõe global; global sobrepõe getHeadColor
   const globalColor=document.getElementById('escalaPreview')?.className.match(/lc-(\w+)/)?.[1];
   const indivColor=cardColors[gi];
   const activeColor=indivColor||globalColor;
@@ -851,15 +853,11 @@ function refreshBlock(gi){
   renderFullPreview();
 }
 
-// ══════════════════════════════════════════════════════════
-// INLINE EDIT
-// ══════════════════════════════════════════════════════════
 function openEditModal(gi,slot){
   const ev=batchEvents[gi];if(!ev)return;
   editCtx={gi,slot,names:ev.names};
   const ds=`${String(ev.day).padStart(2,'0')}/${String(ev.month+1).padStart(2,'0')} — ${ev.title.replace(/📷|🌅|🌙|✝️|🌍|🙏|📸/g,'').replace(/—.*/,'').trim()}`;
 
-  // ── Modo cor ─────────────────────────────────────────────
   if(slot==='__color__'){
     document.getElementById('editModalTitle').textContent='🎨 Cor do cabeçalho';
     document.getElementById('editModalSub').textContent=ds;
@@ -885,7 +883,6 @@ function openEditModal(gi,slot){
     return;
   }
 
-  // ── Modo horário ─────────────────────────────────────────
   if(slot==='__time__'){
     document.getElementById('editModalTitle').textContent='⏰ Editar Horário';
     document.getElementById('editModalSub').textContent=ds;
@@ -906,7 +903,6 @@ function openEditModal(gi,slot){
     return;
   }
 
-  // ── Modo cargo (padrão) ──────────────────────────────────
   document.getElementById('editModalTitle').textContent=`Editar: ${slot}`;
   document.getElementById('editModalSub').textContent=ds;
   const current=(wizardData[gi]||{})[slot]||'—';
@@ -979,9 +975,6 @@ function closeEditModal(){
   editCtx=null;
 }
 
-// ══════════════════════════════════════════════════════════
-// EXPORT
-// ══════════════════════════════════════════════════════════
 function exportPNG(){
   html2canvas(document.getElementById('escalaPreview'),{scale:2,useCORS:true,backgroundColor:'#ffffff'}).then(canvas=>{
     const a=document.createElement('a');a.download='Escala_PASCOM.png';a.href=canvas.toDataURL('image/png');a.click();
@@ -1023,12 +1016,6 @@ function generatePDF(){
   setTimeout(()=>{btn.textContent='📄 Gerar PDF desta Escala';btn.disabled=false;},1500);
 }
 
-// ══════════════════════════════════════════════════════════
-// LITURGICAL COLOR
-// ══════════════════════════════════════════════════════════
-// ══════════════════════════════════════════════════════════
-// PREVIEW CONTROLS
-// ══════════════════════════════════════════════════════════
 const BAR_COLORS={
   padrao:'linear-gradient(135deg,#0e7a5a,#16a87a)',verde:'linear-gradient(135deg,#1b5e20,#2e7d32)',
   dourado:'linear-gradient(135deg,#7a6000,#b8a000)',vermelho:'linear-gradient(135deg,#7f0000,#b71c1c)',
@@ -1067,9 +1054,6 @@ document.addEventListener('DOMContentLoaded',()=>{
   if(inp)inp.addEventListener('input',()=>{const h2=document.querySelector('.prev-title-bar h2');if(h2)h2.textContent=inp.value||'';});
 });
 
-// ══════════════════════════════════════════════════════════
-// COPY + TOAST
-// ══════════════════════════════════════════════════════════
 let toastTimer=null;
 function copyName(name,el){
   const go=()=>{
@@ -1084,9 +1068,6 @@ function copyName(name,el){
   else{const ta=document.createElement('textarea');ta.value=name;ta.style.cssText='position:fixed;opacity:0';document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);go();}
 }
 
-// ══════════════════════════════════════════════════════════
-// NAV + UI
-// ══════════════════════════════════════════════════════════
 function navMonth(d){
   currentMonth+=d;
   if(currentMonth>11){currentMonth=0;currentYear++;}
