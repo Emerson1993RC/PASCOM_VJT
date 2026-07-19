@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Inscrições — Escala PASCOM</title>
+<meta name="description" content="Escolha o dia que você pode ajudar na escala da PASCOM.">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root{--gold:#c9a84c;--gold-light:#f0d080;--gold-dark:#8a6f2e;--bg-deep:#0d0f1a;--bg-card:#141728;--bg-hover:#222846;--text-primary:#f0ead8;--text-muted:#8a8fa8;--green:#5abfa0;--red:#d4594a;--border:rgba(201,168,76,.18);--shadow:0 8px 40px rgba(0,0,0,.6)}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Lato',sans-serif;background:var(--bg-deep);color:var(--text-primary);min-height:100vh;overflow-x:hidden}
+body::before{content:'';position:fixed;inset:0;background-image:radial-gradient(1px 1px at 20% 30%,rgba(201,168,76,.3) 0%,transparent 100%),radial-gradient(1px 1px at 80% 10%,rgba(201,168,76,.2) 0%,transparent 100%),radial-gradient(1px 1px at 50% 80%,rgba(255,255,255,.1) 0%,transparent 100%);pointer-events:none;z-index:0}
+.container{position:relative;z-index:1;max-width:640px;margin:0 auto;padding:0 18px 60px}
+header{text-align:center;padding:36px 16px 20px}
+header::after{content:'';display:block;margin:18px auto 0;width:110px;height:2px;background:linear-gradient(90deg,transparent,var(--gold),transparent)}
+.header-icon{font-size:2rem;margin-bottom:6px;display:block;filter:drop-shadow(0 0 12px rgba(201,168,76,.6))}
+h1{font-family:'Cinzel',serif;font-size:clamp(1.3rem,5vw,1.9rem);color:var(--gold);letter-spacing:.08em;text-shadow:0 0 30px rgba(201,168,76,.4);font-weight:700}
+.subtitle{font-size:.82rem;color:var(--text-muted);letter-spacing:.05em;margin-top:8px;line-height:1.5}
+.name-bar{margin:22px auto 6px;background:var(--bg-card);border:1px solid var(--border);border-radius:14px;padding:14px 16px;display:flex;gap:10px;align-items:center}
+.name-bar label{font-size:.78rem;color:var(--gold-light);white-space:nowrap;font-family:'Cinzel',serif}
+.name-bar input{flex:1;padding:9px 12px;background:#0d0f1a;border:1px solid var(--border);border-radius:8px;color:var(--text-primary);font-size:.88rem;outline:none;font-family:'Lato',sans-serif}
+.name-bar input:focus{border-color:var(--gold)}
+.name-hint{font-size:.72rem;color:var(--text-muted);text-align:center;margin:6px 0 4px;font-style:italic}
+.status-msg{text-align:center;padding:40px 10px;color:var(--text-muted);font-size:.85rem}
+.events-list{display:flex;flex-direction:column;gap:14px;margin-top:18px}
+.ev-card{background:var(--bg-card);border:1px solid var(--border);border-radius:14px;padding:16px 18px;box-shadow:var(--shadow)}
+.ev-date{font-family:'Cinzel',serif;color:var(--gold);font-size:.78rem;letter-spacing:.08em;text-transform:uppercase}
+.ev-title{font-size:1.02rem;font-weight:700;margin-top:4px}
+.ev-time{font-size:.82rem;color:var(--text-muted);margin-top:2px}
+.ev-people{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
+.ev-chip{padding:4px 12px;background:rgba(90,191,160,.12);border:1px solid rgba(90,191,160,.3);border-radius:20px;font-size:.76rem;color:var(--green)}
+.ev-empty{font-size:.76rem;color:var(--text-muted);font-style:italic}
+.ev-actions{margin-top:14px;display:flex;gap:10px}
+.ev-btn{flex:1;padding:10px 14px;background:linear-gradient(135deg,var(--gold-dark),var(--gold));color:var(--bg-deep);border:none;border-radius:24px;font-family:'Cinzel',serif;font-size:.8rem;font-weight:700;letter-spacing:.06em;cursor:pointer;transition:all .2s}
+.ev-btn:hover{transform:translateY(-1px);box-shadow:0 4px 15px rgba(201,168,76,.3)}
+.ev-btn:disabled{opacity:.5;cursor:not-allowed;transform:none;box-shadow:none}
+.ev-btn.joined{background:rgba(90,191,160,.15);color:var(--green);border:1px solid rgba(90,191,160,.4)}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--bg-card);border:1px solid var(--border);color:var(--text-primary);padding:12px 22px;border-radius:30px;font-size:.85rem;box-shadow:var(--shadow);opacity:0;pointer-events:none;transition:all .3s;z-index:50}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.toast.error{border-color:rgba(212,89,74,.4);color:var(--red)}
+footer{text-align:center;margin-top:36px;font-size:.72rem;color:var(--text-muted)}
+</style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <span class="header-icon">🕊️</span>
+    <h1>ESCALA DA PASCOM</h1>
+    <div class="subtitle">Escolha os dias em que você pode ajudar.<br>Depois é só aguardar a função ser definida pelo responsável.</div>
+  </header>
+
+  <div class="name-bar">
+    <label for="meuNome">Meu nome</label>
+    <input id="meuNome" type="text" placeholder="Digite seu nome completo" autocomplete="name">
+  </div>
+  <div class="name-hint">Digite seu nome uma vez — ele fica salvo neste aparelho para os próximos cliques.</div>
+
+  <div id="eventsWrap">
+    <div class="status-msg">Carregando eventos...</div>
+  </div>
+
+  <footer>PASCOM — Pastoral da Comunicação</footer>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ══════════════════════════════════════════════════════════
+// CONFIGURAÇÃO — preencha com os dados do seu projeto Supabase
+// (Painel do Supabase → Project Settings → API Keys)
+// ══════════════════════════════════════════════════════════
+const SUPABASE_URL = 'https://newbygviinkztjhkxbvz.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_JFmMw_uIZyQVkF6fTl6qlw_3mk8eO6S'; // cole a chave completa que apareceu na tela de API Keys
+// ══════════════════════════════════════════════════════════
+
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+function showToast(msg,isError){
+  const t=document.getElementById('toast');
+  t.textContent=msg;
+  t.className='toast show'+(isError?' error':'');
+  setTimeout(()=>t.classList.remove('show'),3000);
+}
+
+function getSavedName(){return localStorage.getItem('pascom_nome')||'';}
+function saveName(n){localStorage.setItem('pascom_nome',n);}
+
+const MESES=['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+
+async function loadEvents(){
+  const wrap=document.getElementById('eventsWrap');
+  const hoje=new Date();hoje.setHours(0,0,0,0);
+
+  const {data:eventos,error:errEv}=await sb.from('eventos').select('*').order('ano').order('mes').order('dia');
+  if(errEv){
+    wrap.innerHTML=`<div class="status-msg">Não foi possível carregar os eventos.<br>Verifique se a URL e a chave do Supabase foram preenchidas corretamente no código.</div>`;
+    console.error(errEv);
+    return;
+  }
+  const futuros=(eventos||[]).filter(e=>{
+    const d=new Date(e.ano,e.mes,e.dia);
+    return d>=hoje;
+  });
+  if(futuros.length===0){
+    wrap.innerHTML=`<div class="status-msg">Nenhum evento em aberto no momento.<br>Volte mais tarde 🙏</div>`;
+    return;
+  }
+
+  const {data:inscricoes,error:errIns}=await sb.from('inscricoes').select('*');
+  if(errIns){console.error(errIns);}
+
+  wrap.innerHTML=`<div class="events-list">${futuros.map(ev=>renderCard(ev,inscricoes||[])).join('')}</div>`;
+}
+
+function renderCard(ev,inscricoes){
+  const meuNome=getSavedName().trim().toLowerCase();
+  const pessoas=inscricoes.filter(i=>i.evento_id===ev.id);
+  const jaEstou=meuNome&&pessoas.some(p=>p.nome.trim().toLowerCase()===meuNome);
+  const dataObj=new Date(ev.ano,ev.mes,ev.dia);
+  const diaSemana=dataObj.toLocaleDateString('pt-BR',{weekday:'long'});
+  return `<div class="ev-card" id="card-${ev.id}">
+    <div class="ev-date">${String(ev.dia).padStart(2,'0')} de ${MESES[ev.mes]} — ${diaSemana}</div>
+    <div class="ev-title">${ev.titulo}</div>
+    ${ev.horario?`<div class="ev-time">🕐 ${ev.horario}${/hs$/i.test(ev.horario)?'':'hs'}</div>`:''}
+    <div class="ev-people">
+      ${pessoas.length>0?pessoas.map(p=>`<span class="ev-chip">${p.nome}</span>`).join(''):'<span class="ev-empty">Ninguém confirmado ainda</span>'}
+    </div>
+    <div class="ev-actions">
+      <button class="ev-btn${jaEstou?' joined':''}" ${jaEstou?'disabled':''} onclick="confirmarPresenca('${ev.id}',this)">
+        ${jaEstou?'✅ Você confirmou':'🙋 Eu vou nesse dia'}
+      </button>
+    </div>
+  </div>`;
+}
+
+async function confirmarPresenca(eventoId,btn){
+  const input=document.getElementById('meuNome');
+  const nome=input.value.trim();
+  if(!nome){
+    showToast('Digite seu nome antes de confirmar.',true);
+    input.focus();
+    return;
+  }
+  saveName(nome);
+  btn.disabled=true;
+  btn.textContent='Enviando...';
+  const {error}=await sb.from('inscricoes').insert({evento_id:eventoId,nome});
+  if(error){
+    if(error.code==='23505'){
+      showToast('Você já está confirmado nesse dia!');
+    }else{
+      showToast('Não foi possível confirmar. Tente novamente.',true);
+      console.error(error);
+    }
+  }else{
+    showToast('Presença confirmada! 🙏');
+  }
+  loadEvents();
+}
+
+document.getElementById('meuNome').value=getSavedName();
+document.getElementById('meuNome').addEventListener('blur',e=>saveName(e.target.value.trim()));
+
+loadEvents();
+</script>
+</body>
+</html>
