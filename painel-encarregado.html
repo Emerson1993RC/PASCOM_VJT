@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Painel do Encarregado — Escala PASCOM</title>
+<meta name="robots" content="noindex, nofollow">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root{--gold:#c9a84c;--gold-light:#f0d080;--gold-dark:#8a6f2e;--bg-deep:#0d0f1a;--bg-card:#141728;--text-primary:#f0ead8;--text-muted:#8a8fa8;--green:#5abfa0;--red:#d4594a;--border:rgba(201,168,76,.18);--shadow:0 8px 40px rgba(0,0,0,.6)}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Lato',sans-serif;background:var(--bg-deep);color:var(--text-primary);min-height:100vh}
+.container{max-width:760px;margin:0 auto;padding:0 18px 60px}
+header{text-align:center;padding:36px 16px 20px}
+header::after{content:'';display:block;margin:18px auto 0;width:110px;height:2px;background:linear-gradient(90deg,transparent,var(--gold),transparent)}
+.header-icon{font-size:2rem;margin-bottom:6px;display:block}
+h1{font-family:'Cinzel',serif;font-size:clamp(1.2rem,5vw,1.7rem);color:var(--gold);letter-spacing:.06em}
+.subtitle{font-size:.8rem;color:var(--text-muted);margin-top:8px}
+.gate{max-width:340px;margin:60px auto;text-align:center;background:var(--bg-card);border:1px solid var(--border);border-radius:16px;padding:28px 22px}
+.gate input{width:100%;padding:10px 14px;background:#0d0f1a;border:1px solid var(--border);border-radius:8px;color:var(--text-primary);font-size:1rem;text-align:center;letter-spacing:.2em;margin:14px 0;outline:none}
+.gate input:focus{border-color:var(--gold)}
+.gate button{padding:10px 26px;background:linear-gradient(135deg,var(--gold-dark),var(--gold));color:var(--bg-deep);border:none;border-radius:24px;font-family:'Cinzel',serif;font-weight:700;font-size:.82rem;cursor:pointer}
+.gate-err{color:var(--red);font-size:.78rem;margin-top:10px;min-height:1em}
+.status-msg{text-align:center;padding:40px 10px;color:var(--text-muted);font-size:.85rem}
+.summary-bar{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-bottom:20px}
+.summary-chip{padding:6px 16px;background:var(--bg-card);border:1px solid var(--border);border-radius:20px;font-size:.78rem;color:var(--gold-light)}
+.events-list{display:flex;flex-direction:column;gap:14px}
+.ev-card{background:var(--bg-card);border:1px solid var(--border);border-radius:14px;padding:16px 18px;box-shadow:var(--shadow)}
+.ev-date{font-family:'Cinzel',serif;color:var(--gold);font-size:.78rem;letter-spacing:.08em;text-transform:uppercase}
+.ev-title{font-size:1.02rem;font-weight:700;margin-top:4px}
+.ev-time{font-size:.82rem;color:var(--text-muted);margin-top:2px}
+.ev-people{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
+.ev-chip{padding:4px 12px;background:rgba(90,191,160,.12);border:1px solid rgba(90,191,160,.3);border-radius:20px;font-size:.76rem;color:var(--green)}
+.ev-empty{font-size:.76rem;color:var(--text-muted);font-style:italic}
+.ev-copy{margin-top:12px;background:none;border:1px solid var(--border);color:var(--text-muted);border-radius:20px;padding:5px 14px;font-size:.72rem;cursor:pointer}
+.ev-copy:hover{border-color:var(--gold);color:var(--gold-light)}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--bg-card);border:1px solid var(--border);color:var(--text-primary);padding:12px 22px;border-radius:30px;font-size:.85rem;box-shadow:var(--shadow);opacity:0;pointer-events:none;transition:all .3s;z-index:50}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+</style>
+</head>
+<body>
+
+<div class="gate" id="gate">
+  <div class="header-icon">🔒</div>
+  <h1 style="font-family:'Cinzel',serif;color:var(--gold);font-size:1.1rem">Painel do Encarregado</h1>
+  <div class="subtitle">Digite o código de acesso combinado com a equipe</div>
+  <input id="pin" type="password" placeholder="••••" inputmode="numeric">
+  <div class="gate-err" id="gateErr"></div>
+  <button onclick="tentarEntrar()">Entrar</button>
+</div>
+
+<div class="container" id="painel" style="display:none">
+  <header>
+    <span class="header-icon">📋</span>
+    <h1>PAINEL DO ENCARREGADO</h1>
+    <div class="subtitle">Confirmações recebidas — Escala PASCOM</div>
+  </header>
+  <div class="summary-bar" id="summaryBar"></div>
+  <div id="eventsWrap"><div class="status-msg">Carregando...</div></div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ══════════════════════════════════════════════════════════
+// CONFIGURAÇÃO
+// ══════════════════════════════════════════════════════════
+const SUPABASE_URL = 'https://newbygviinkztjhkxbvz.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_JFmMw_uIZyQVkF6fTl6qlw_3mk8eO6S'; // cole a chave completa que apareceu na tela de API Keys
+
+// Código simples de acesso — troque por um número/senha que só a equipe saiba.
+// AVISO HONESTO: isso é só uma trava simples pra afastar curiosos, não é
+// segurança de verdade (qualquer pessoa que veja o código-fonte da página
+// consegue ler esse valor). Os dados em si já são protegidos pelas regras
+// do Supabase, não por este código.
+const CODIGO_ACESSO = '1234';
+// ══════════════════════════════════════════════════════════
+
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+const MESES=['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+
+function tentarEntrar(){
+  const val=document.getElementById('pin').value.trim();
+  if(val===CODIGO_ACESSO){
+    sessionStorage.setItem('pascom_admin_ok','1');
+    document.getElementById('gate').style.display='none';
+    document.getElementById('painel').style.display='block';
+    carregarPainel();
+  }else{
+    document.getElementById('gateErr').textContent='Código incorreto.';
+  }
+}
+document.getElementById('pin').addEventListener('keydown',e=>{if(e.key==='Enter')tentarEntrar();});
+
+if(sessionStorage.getItem('pascom_admin_ok')==='1'){
+  document.getElementById('gate').style.display='none';
+  document.getElementById('painel').style.display='block';
+  carregarPainel();
+}
+
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.className='toast show';
+  setTimeout(()=>t.classList.remove('show'),2500);
+}
+
+async function carregarPainel(){
+  const wrap=document.getElementById('eventsWrap');
+  const {data:eventos,error:errEv}=await sb.from('eventos').select('*').order('ano').order('mes').order('dia');
+  if(errEv){
+    wrap.innerHTML='<div class="status-msg">Não foi possível carregar. Confira a URL/chave do Supabase no código.</div>';
+    console.error(errEv);
+    return;
+  }
+  const {data:inscricoes,error:errIns}=await sb.from('inscricoes').select('*');
+  if(errIns)console.error(errIns);
+
+  const totalEventos=(eventos||[]).length;
+  const totalInscricoes=(inscricoes||[]).length;
+  const nomesUnicos=new Set((inscricoes||[]).map(i=>i.nome.trim().toLowerCase())).size;
+  document.getElementById('summaryBar').innerHTML=`
+    <span class="summary-chip">📅 ${totalEventos} evento${totalEventos!==1?'s':''}</span>
+    <span class="summary-chip">✅ ${totalInscricoes} confirmaç${totalInscricoes!==1?'ões':'ão'}</span>
+    <span class="summary-chip">🧑‍🤝‍🧑 ${nomesUnicos} pessoa${nomesUnicos!==1?'s':''} diferentes</span>`;
+
+  if(!eventos||eventos.length===0){
+    wrap.innerHTML='<div class="status-msg">Nenhum evento cadastrado ainda.</div>';
+    return;
+  }
+
+  wrap.innerHTML=`<div class="events-list">${eventos.map(ev=>{
+    const pessoas=(inscricoes||[]).filter(i=>i.evento_id===ev.id);
+    const dataObj=new Date(ev.ano,ev.mes,ev.dia);
+    const diaSemana=dataObj.toLocaleDateString('pt-BR',{weekday:'long'});
+    const listaNomes=pessoas.map(p=>p.nome).join(', ');
+    return `<div class="ev-card">
+      <div class="ev-date">${String(ev.dia).padStart(2,'0')}/${String(ev.mes+1).padStart(2,'0')}/${ev.ano} — ${diaSemana}</div>
+      <div class="ev-title">${ev.titulo}</div>
+      ${ev.horario?`<div class="ev-time">🕐 ${ev.horario}</div>`:''}
+      <div class="ev-people">
+        ${pessoas.length>0?pessoas.map(p=>`<span class="ev-chip">${p.nome}</span>`).join(''):'<span class="ev-empty">Ninguém confirmou ainda</span>'}
+      </div>
+      ${pessoas.length>0?`<button class="ev-copy" onclick="copiarNomes('${listaNomes.replace(/'/g,"\\'")}')">📋 Copiar nomes</button>`:''}
+    </div>`;
+  }).join('')}</div>`;
+}
+
+function copiarNomes(nomes){
+  navigator.clipboard.writeText(nomes).then(()=>showToast('Nomes copiados!'));
+}
+</script>
+</body>
+</html>
