@@ -31,6 +31,7 @@ h1{font-family:'Cinzel',serif;font-size:clamp(1.3rem,5vw,1.9rem);color:var(--gol
 .ev-time{font-size:.82rem;color:var(--text-muted);margin-top:2px}
 .ev-people{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
 .ev-chip{padding:4px 12px;background:rgba(90,191,160,.12);border:1px solid rgba(90,191,160,.3);border-radius:20px;font-size:.76rem;color:var(--green)}
+.ev-count{padding:4px 12px;background:rgba(201,168,76,.1);border:1px solid var(--border);border-radius:20px;font-size:.76rem;color:var(--gold-light)}
 .ev-empty{font-size:.76rem;color:var(--text-muted);font-style:italic}
 .ev-actions{margin-top:14px;display:flex;gap:10px}
 .ev-btn{flex:1;padding:10px 14px;background:linear-gradient(135deg,var(--gold-dark),var(--gold));color:var(--bg-deep);border:none;border-radius:24px;font-family:'Cinzel',serif;font-size:.8rem;font-weight:700;letter-spacing:.06em;cursor:pointer;transition:all .2s}
@@ -71,8 +72,8 @@ footer{text-align:center;margin-top:36px;font-size:.72rem;color:var(--text-muted
 // CONFIGURAÇÃO — preencha com os dados do seu projeto Supabase
 // (Painel do Supabase → Project Settings → API Keys)
 // ══════════════════════════════════════════════════════════
-const SUPABASE_URL = 'https://newbygviinkztjhkxbvz.supabase.co';
-const SUPABASE_KEY = 'sb_publishable_JFmMw_uIZyQVkF6fTl6qlw_3mk8eO6S'; // cole a chave completa que apareceu na tela de API Keys
+const SUPABASE_URL = 'COLE_AQUI_A_PROJECT_URL';
+const SUPABASE_KEY = 'COLE_AQUI_A_PUBLISHABLE_KEY';
 // ══════════════════════════════════════════════════════════
 
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
@@ -108,16 +109,24 @@ async function loadEvents(){
     return;
   }
 
-  const {data:inscricoes,error:errIns}=await sb.from('inscricoes').select('*');
+  // busca só evento_id de todas as inscrições (sem nomes) — usada apenas para contar
+  const {data:todasInscricoes,error:errIns}=await sb.from('inscricoes').select('evento_id');
   if(errIns){console.error(errIns);}
+  const contagem={};
+  (todasInscricoes||[]).forEach(i=>{contagem[i.evento_id]=(contagem[i.evento_id]||0)+1;});
 
-  wrap.innerHTML=`<div class="events-list">${futuros.map(ev=>renderCard(ev,inscricoes||[])).join('')}</div>`;
+  // busca só as inscrições da PRÓPRIA pessoa (pelo nome salvo), pra saber em quais dias ela já confirmou
+  const meuNome=getSavedName().trim();
+  let meusEventos=new Set();
+  if(meuNome){
+    const {data:minhas}=await sb.from('inscricoes').select('evento_id').ilike('nome',meuNome);
+    meusEventos=new Set((minhas||[]).map(m=>m.evento_id));
+  }
+
+  wrap.innerHTML=`<div class="events-list">${futuros.map(ev=>renderCard(ev,contagem[ev.id]||0,meusEventos.has(ev.id))).join('')}</div>`;
 }
 
-function renderCard(ev,inscricoes){
-  const meuNome=getSavedName().trim().toLowerCase();
-  const pessoas=inscricoes.filter(i=>i.evento_id===ev.id);
-  const jaEstou=meuNome&&pessoas.some(p=>p.nome.trim().toLowerCase()===meuNome);
+function renderCard(ev,total,jaEstou){
   const dataObj=new Date(ev.ano,ev.mes,ev.dia);
   const diaSemana=dataObj.toLocaleDateString('pt-BR',{weekday:'long'});
   return `<div class="ev-card" id="card-${ev.id}">
@@ -125,7 +134,7 @@ function renderCard(ev,inscricoes){
     <div class="ev-title">${ev.titulo}</div>
     ${ev.horario?`<div class="ev-time">🕐 ${ev.horario}${/hs$/i.test(ev.horario)?'':'hs'}</div>`:''}
     <div class="ev-people">
-      ${pessoas.length>0?pessoas.map(p=>`<span class="ev-chip">${p.nome}</span>`).join(''):'<span class="ev-empty">Ninguém confirmado ainda</span>'}
+      ${total>0?`<span class="ev-count">👥 ${total} pessoa${total>1?'s':''} confirmada${total>1?'s':''}</span>`:'<span class="ev-empty">Ninguém confirmado ainda</span>'}
     </div>
     <div class="ev-actions">
       <button class="ev-btn${jaEstou?' joined':''}" ${jaEstou?'disabled':''} onclick="confirmarPresenca('${ev.id}',this)">
