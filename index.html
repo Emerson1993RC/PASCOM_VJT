@@ -236,6 +236,44 @@ h1{font-family:'Cinzel',serif;font-size:clamp(1.6rem,4vw,2.6rem);color:var(--gol
 .float-top-btn.visible{opacity:1;pointer-events:all;transform:translateY(0)}
 .float-top-btn:hover{transform:translateY(-2px);box-shadow:0 6px 24px rgba(201,168,76,.55)}
 @media(max-width:600px){.cards-grid{grid-template-columns:1fr}.calendar-grid{padding:10px 6px;gap:2px}.cal-day{min-height:36px}}
+/* MODO DE ENTRADA: CSV x MANUAL */
+.mode-toggle{display:flex;justify-content:center;gap:10px;margin:24px auto 0;max-width:520px}
+.mode-btn{flex:1;padding:10px 16px;background:var(--bg-card);border:1px solid var(--border);border-radius:30px;color:var(--text-muted);font-family:'Cinzel',serif;font-size:.78rem;font-weight:700;letter-spacing:.06em;cursor:pointer;transition:all .2s}
+.mode-btn:hover{border-color:var(--gold);color:var(--text-primary)}
+.mode-btn.active{background:linear-gradient(135deg,var(--gold-dark),var(--gold));color:var(--bg-deep);border-color:transparent}
+.manual-zone{margin:20px auto 32px;max-width:640px;display:none}
+.manual-zone.visible{display:block}
+.manual-header{text-align:center;margin-bottom:16px}
+.manual-icon{font-size:1.8rem;display:block;margin-bottom:6px}
+.manual-title{font-family:'Cinzel',serif;font-size:1rem;color:var(--gold)}
+.manual-sub{font-size:.8rem;color:var(--text-muted);margin-top:4px}
+.manual-month-btns{display:flex;justify-content:center;gap:10px;margin-bottom:16px;flex-wrap:wrap}
+.manual-month-btn{padding:7px 16px;background:var(--bg-card);border:1px solid var(--border);border-radius:20px;color:var(--gold-light);font-size:.78rem;cursor:pointer}
+.manual-month-btn:hover{border-color:var(--gold)}
+.manual-form{background:var(--bg-card);border:1px solid var(--border);border-radius:14px;padding:16px;display:flex;flex-direction:column;gap:10px}
+.manual-form-row{display:flex;gap:8px;flex-wrap:wrap}
+.manual-input{flex:1;min-width:110px;padding:9px 12px;background:#0d0f1a;border:1px solid var(--border);border-radius:8px;color:var(--text-primary);font-size:.82rem;outline:none;font-family:'Lato',sans-serif}
+.manual-input:focus{border-color:var(--gold)}
+.manual-input-day{max-width:80px;flex:0 0 80px}
+.manual-add-btn{padding:9px 20px;background:linear-gradient(135deg,#1e6e50,#2ecc8a);color:#fff;border:none;border-radius:20px;font-family:'Cinzel',serif;font-size:.78rem;font-weight:700;cursor:pointer;white-space:nowrap}
+.manual-events-list{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.manual-ev-chip{display:inline-flex;align-items:center;gap:6px;padding:5px 12px;background:rgba(201,168,76,.1);border:1px solid var(--border);border-radius:20px;font-size:.75rem;color:var(--gold-light)}
+.manual-ev-chip button{background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:.8rem;padding:0}
+.no-manual-events{font-size:.78rem;color:var(--text-muted);font-style:italic}
+.manual-pending-label{font-size:.82rem;color:var(--gold-light);font-weight:700;text-align:center;padding:2px 0 4px}
+.manual-hint{font-size:.72rem;color:var(--text-muted);text-align:center;margin-top:10px;font-style:italic}
+.cal-day.manual-empty{cursor:pointer;border:1px dashed rgba(201,168,76,.35)}
+.cal-day.manual-empty:hover{background:rgba(201,168,76,.1);border-color:var(--gold)}
+/* EDIÇÃO DIRETA NO PREVIEW: título do card e título do grupo */
+.ev-weekday[contenteditable]{cursor:text;border-radius:4px;padding:1px 2px;display:inline-block}
+.ev-weekday[contenteditable]:hover{background:rgba(255,255,255,.08)}
+.ev-weekday[contenteditable]:focus{outline:1px dashed rgba(255,255,255,.7);background:rgba(255,255,255,.1)}
+.prev-group-label span[contenteditable]{cursor:text;border-radius:3px;padding:0 2px}
+.prev-group-label span[contenteditable]:hover{background:rgba(0,0,0,.06)}
+.prev-group-label span[contenteditable]:focus{outline:1px dashed rgba(0,0,0,.4)}
+.color-edit-btn{display:inline-block;margin-top:3px;font-size:.62rem;opacity:.55;cursor:pointer}
+.color-edit-btn:hover{opacity:1}
+.edit-marker{opacity:.85}
 </style>
 </head>
 <body>
@@ -252,6 +290,7 @@ h1{font-family:'Cinzel',serif;font-size:clamp(1.6rem,4vw,2.6rem);color:var(--gol
     <div class="modal-question" id="modalQuestion"></div>
     <div class="modal-person" id="modalPerson"></div>
     <div class="name-chips" id="modalChips"></div>
+    <input class="edit-manual" id="wizardManualInput" style="display:none" placeholder="Digite o nome...">
     <div class="modal-buttons">
       <button class="btn-sim" onclick="wizardAnswer(true)">✅ Confirmar</button>
       <button class="btn-nao" onclick="wizardAnswer(false)">✗ Sem escalado ( — )</button>
@@ -281,6 +320,11 @@ h1{font-family:'Cinzel',serif;font-size:clamp(1.6rem,4vw,2.6rem);color:var(--gol
     <p class="motto">Tudo para maior glória de Deus</p>
   </header>
 
+  <div class="mode-toggle">
+    <button class="mode-btn active" id="modeBtnUpload" onclick="setEntryMode('upload')">📤 Enviar Planilha CSV</button>
+    <button class="mode-btn" id="modeBtnManual" onclick="setEntryMode('manual')">✏️ Criar Escala Manualmente</button>
+  </div>
+
   <div class="upload-zone" id="uploadZone" onclick="document.getElementById('fileInput').click()">
     <span class="upload-icon">📋</span>
     <div class="upload-title">Carregar Planilha de Escala</div>
@@ -288,6 +332,31 @@ h1{font-family:'Cinzel',serif;font-size:clamp(1.6rem,4vw,2.6rem);color:var(--gol
     <button class="upload-btn" onclick="event.stopPropagation();document.getElementById('fileInput').click()">Selecionar Arquivo CSV</button>
     <div id="fileStatus"></div>
     <input type="file" id="fileInput" accept=".csv">
+  </div>
+
+  <div class="manual-zone" id="manualZone">
+    <div class="manual-header">
+      <span class="manual-icon">🗓️</span>
+      <div class="manual-title">Criar Escala do Zero</div>
+      <div class="manual-sub">Escolha o mês (vigente ou posterior) e adicione os eventos manualmente. Depois é só usar o calendário e o preview normalmente.</div>
+    </div>
+    <div class="manual-month-btns">
+      <button class="manual-month-btn" onclick="setManualMonth('current')">📅 Mês vigente</button>
+      <button class="manual-month-btn" onclick="setManualMonth('next')">⏭️ Mês seguinte</button>
+    </div>
+    <div class="manual-form">
+      <div class="manual-pending-label" id="manualPendingLabel">👉 Clique em um dia no calendário abaixo para adicionar um evento nele</div>
+      <div class="manual-form-row">
+        <input type="text" id="manEvTitle" class="manual-input manual-input-title" placeholder="Título do evento (ex: Missa das 18h)">
+        <input type="text" id="manEvTime" class="manual-input manual-input-time" placeholder="Horário (ex: 18:00)">
+      </div>
+      <div class="manual-form-row">
+        <input type="text" id="manEvNames" class="manual-input manual-input-names" placeholder="Nomes disponíveis (opcional, separados por vírgula)">
+        <button class="manual-add-btn" onclick="addManualEvent()">＋ Adicionar Evento</button>
+      </div>
+    </div>
+    <div class="manual-events-list" id="manualEventsList"></div>
+    <div class="manual-hint">Depois de adicionar os eventos, clique nos dias com escala (ou selecione vários) e use "📋 Montar Escala do Lote", exatamente como no modo CSV.</div>
   </div>
 
   <div class="calendar-section" id="calendarSection">
@@ -387,7 +456,12 @@ let wizardQueue=[], wizardQueueIdx=0;
 let wizardData={}, batchEvents=[];
 let cardColors={};
 let cardTimes={};
+let cardTitles={};
+let groupLabels={};
 let editCtx=null;
+let entryMode='upload';
+let manualEventSeq=0;
+let pendingManualDay=null;
 
 function getHeadColor(ev){
   const t=ev.title.toLowerCase();
@@ -510,8 +584,96 @@ function processData(csvText){
     return da-db||(a.time||'00:00').localeCompare(b.time||'00:00');
   });
   if(allEvents.length>0){currentYear=allEvents[0].year;currentMonth=allEvents[0].month;}
-  selectedDay=null;batchDays=[];savedBatches=[];cardColors={};cardTimes={};
+  selectedDay=null;batchDays=[];savedBatches=[];cardColors={};cardTimes={};cardTitles={};groupLabels={};
   buildUI();
+}
+
+// ══════════════════════════════════════════════════════════
+// MODO MANUAL — criar escala do zero, sem CSV
+// ══════════════════════════════════════════════════════════
+function setEntryMode(mode){
+  entryMode=mode;
+  document.getElementById('modeBtnUpload').classList.toggle('active',mode==='upload');
+  document.getElementById('modeBtnManual').classList.toggle('active',mode==='manual');
+  document.getElementById('uploadZone').style.display=mode==='upload'?'':'none';
+  document.getElementById('manualZone').classList.toggle('visible',mode==='manual');
+  pendingManualDay=null;
+  updatePendingLabel();
+  if(mode==='manual'){
+    renderManualEventsList();
+    buildUI();
+  }
+}
+
+function setManualMonth(which){
+  const now=new Date();
+  if(which==='current'){currentYear=now.getFullYear();currentMonth=now.getMonth();}
+  else{
+    let m=now.getMonth()+1,y=now.getFullYear();
+    if(m>11){m=0;y++;}
+    currentMonth=m;currentYear=y;
+  }
+  selectedDay=null;
+  pendingManualDay=null;
+  updatePendingLabel();
+  buildUI();
+}
+
+function setPendingManualDay(day,month,year,opts={}){
+  pendingManualDay={day,month,year};
+  updatePendingLabel();
+  if(opts.focus!==false){
+    document.getElementById('manEvTitle').focus({preventScroll:opts.scroll===false});
+  }
+}
+
+function updatePendingLabel(){
+  const lbl=document.getElementById('manualPendingLabel');
+  if(!lbl)return;
+  if(pendingManualDay){
+    const {day,month,year}=pendingManualDay;
+    lbl.textContent=`📅 Adicionando evento em ${String(day).padStart(2,'0')}/${String(month+1).padStart(2,'0')}/${year} — pode adicionar mais de um`;
+  }else{
+    lbl.textContent='👉 Clique em um dia no calendário abaixo para adicionar um evento nele';
+  }
+}
+
+function addManualEvent(){
+  if(!pendingManualDay){alert('Clique primeiro em um dia no calendário abaixo para escolher a data do evento.');return;}
+  const {day,month,year}=pendingManualDay;
+  const title=document.getElementById('manEvTitle').value.trim();
+  const time=document.getElementById('manEvTime').value.trim();
+  const namesRaw=document.getElementById('manEvNames').value.trim();
+  if(!title){alert('Informe um título para o evento.');return;}
+  const names=namesRaw?namesRaw.split(',').map(n=>n.trim()).filter(Boolean):[];
+  let ci=Object.keys(nameColors).length;
+  names.forEach(n=>{if(!(n in nameColors)){nameColors[n]=ci%10;ci++;}});
+  const ev={day,month,year,title,time:time||null,specialTime:null,names,manual:true,_mid:'m'+(manualEventSeq++)};
+  allEvents.push(ev);
+  allEvents.sort((a,b)=>{
+    const da=new Date(a.year,a.month,a.day),db=new Date(b.year,b.month,b.day);
+    return da-db||(a.time||'00:00').localeCompare(b.time||'00:00');
+  });
+  document.getElementById('manEvTitle').value='';
+  document.getElementById('manEvTime').value='';
+  document.getElementById('manEvNames').value='';
+  buildUI();
+  renderManualEventsList();
+  document.getElementById('manEvTitle').focus();
+}
+
+function removeManualEvent(mid){
+  allEvents=allEvents.filter(e=>e._mid!==mid);
+  buildUI();
+  renderManualEventsList();
+}
+
+function renderManualEventsList(){
+  const wrap=document.getElementById('manualEventsList');
+  if(!wrap)return;
+  const manual=allEvents.filter(e=>e.manual);
+  if(manual.length===0){wrap.innerHTML='<div class="no-manual-events">Nenhum evento manual adicionado ainda.</div>';return;}
+  wrap.innerHTML=manual.map(e=>`<span class="manual-ev-chip">${String(e.day).padStart(2,'0')}/${String(e.month+1).padStart(2,'0')} — ${e.title}${e.time?' ('+e.time+'hs)':''}<button onclick="removeManualEvent('${e._mid}')" title="Remover">✕</button></span>`).join('');
 }
 
 // ══════════════════════════════════════════════════════════
@@ -535,7 +697,10 @@ function buildCalendar(){
     if(cnt>0){
       el.classList.add('has-event');
       if(batchDays.some(b=>b.day===d&&b.month===currentMonth&&b.year===currentYear))el.classList.add('in-batch');
-      el.onclick=()=>toggleBatchDay(d);
+      el.onclick=()=>{toggleBatchDay(d);if(entryMode==='manual')setPendingManualDay(d,currentMonth,currentYear,{scroll:false});};
+    }else if(entryMode==='manual'){
+      el.classList.add('manual-empty');
+      el.onclick=()=>setPendingManualDay(d,currentMonth,currentYear);
     }
     if(selectedDay&&selectedDay.day===d&&selectedDay.month===currentMonth&&selectedDay.year===currentYear)el.classList.add('selected');
     const numEl=document.createElement('div');numEl.className='day-num';numEl.textContent=d;el.appendChild(numEl);
@@ -748,9 +913,19 @@ function renderWizardStep(){
   const dateStr=`${String(step.ev.day).padStart(2,'0')}/${String(step.ev.month+1).padStart(2,'0')} ${step.ev.time?'— '+step.ev.time+'hs':''}`;
   document.getElementById('modalPerson').innerHTML=`Data: <strong>${dateStr}</strong>`;
   const already=wizardData[step.gi][step.slot];
-  document.getElementById('modalChips').innerHTML=step.ev.names.map(n=>`
-    <button class="name-chip ${already&&already===n.trim()?'selected':''}"
-      onclick="wizardPickName('${n.trim().replace(/'/g,"\\'")}',this)">${n.trim()}</button>`).join('');
+  const manualInput=document.getElementById('wizardManualInput');
+  if(step.ev.names.length===0){
+    document.getElementById('modalChips').innerHTML='';
+    manualInput.style.display='';
+    manualInput.value=already&&already!=='—'?already:'';
+    manualInput.placeholder='Digite o nome...';
+    setTimeout(()=>manualInput.focus(),0);
+  }else{
+    manualInput.style.display='none';
+    document.getElementById('modalChips').innerHTML=step.ev.names.map(n=>`
+      <button class="name-chip ${already&&already===n.trim()?'selected':''}"
+        onclick="wizardPickName('${n.trim().replace(/'/g,"\\'")}',this)">${n.trim()}</button>`).join('');
+  }
 }
 
 function wizardPickName(name,btn){
@@ -761,7 +936,9 @@ function wizardPickName(name,btn){
 
 function wizardAnswer(yes){
   const step=wizardQueue[wizardQueueIdx];
-  wizardData[step.gi][step.slot]=yes?(wizardData[step.gi][step.slot]||step.ev.names[0]||'—'):'—';
+  const manualInput=document.getElementById('wizardManualInput');
+  const manualVal=manualInput&&manualInput.style.display!=='none'?manualInput.value.trim():'';
+  wizardData[step.gi][step.slot]=yes?(manualVal||wizardData[step.gi][step.slot]||step.ev.names[0]||'—'):'—';
   wizardQueueIdx++;
   renderWizardStep();
 }
@@ -790,7 +967,8 @@ function renderFullPreview(autoScroll = false){
   const COLS=4;
   let bodyHtml='';let gi=0;
   savedBatches.forEach((sb,sbIdx)=>{
-    bodyHtml+=`<div class="prev-group-label">🗓️ ${sb.label}</div>`;
+    const labelText=(groupLabels[sbIdx]!==undefined&&groupLabels[sbIdx]!==null&&groupLabels[sbIdx]!=='')?groupLabels[sbIdx]:sb.label;
+    bodyHtml+=`<div class="prev-group-label">🗓️ <span contenteditable="true" spellcheck="false" onblur="saveGroupLabel(${sbIdx},this)" onkeydown="if(event.key==='Enter'){event.preventDefault();this.blur();}" title="Clique para editar o título do grupo">${labelText}</span></div>`;
     for(let i=0;i<sb.events.length;i+=COLS){
       const rowEvs=sb.events.slice(i,i+COLS);
       let blocks='';
@@ -819,6 +997,12 @@ function renderFullPreview(autoScroll = false){
     <div class="prev-footer" style="background:${barColor}"><div class="footer-quote">"Tudo para maior glória de Deus!"</div></div>`;
 }
 
+function saveGroupLabel(sbIdx,el){
+  const val=el.textContent.replace(/\s+/g,' ').trim();
+  groupLabels[sbIdx]=val;
+  el.textContent=val;
+}
+
 const LC_COLORS={
   'verde':   {bg:'#2e7d32', label:'Verde'},
   'branco':  {bg:'#b8a000', label:'Branco'},
@@ -838,6 +1022,8 @@ function buildBlock(ev,gi){
   const timeIcon=ev.title.includes('Manhã')?'☀️':ev.title.includes('Noite')?'🌙':'';
   const dateStr=`${String(ev.day).padStart(2,'0')}/${String(ev.month+1).padStart(2,'0')}`;
   const displayTime=cardTimes[gi]||(ev.specialTime||ev.time);
+  const defaultHeader=`${timeIcon} ${titleClean} (${dateStr}${ev.time?' — '+ev.time+'hs':''})`.replace(/\s+/g,' ').trim();
+  const headerText=(cardTitles[gi]!==undefined&&cardTitles[gi]!==null&&cardTitles[gi]!=='')?cardTitles[gi]:defaultHeader;
   const slotRows=SLOTS.map(slot=>{
     const val=slots[slot]||'—';
     return `<div class="prev-row">
@@ -849,18 +1035,28 @@ function buildBlock(ev,gi){
   const colorDot=indivColor?`<span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#fff;opacity:.7;margin-left:5px;vertical-align:middle" title="Cor individual: ${LC_COLORS[indivColor].label}"></span>`:'';
   const horarioBg=activeColor&&LC_COLORS[activeColor]?LC_COLORS[activeColor].bg:'#0e7a5a';
   return `<div class="prev-event-block" id="block-${gi}">
-    <div class="prev-event-head" style="background:${hc};cursor:pointer" onclick="openEditModal(${gi},'__color__')" title="Clique para mudar a cor">
-      <div class="ev-weekday">${timeIcon} ${titleClean} (${dateStr}${ev.time?' — '+ev.time+'hs':''})${colorDot}</div>
+    <div class="prev-event-head" style="background:${hc};cursor:pointer" onclick="openEditModal(${gi},'__color__')" title="Clique fora do texto para mudar a cor do cabeçalho">
+      <div class="ev-weekday" contenteditable="true" spellcheck="false"
+        onclick="event.stopPropagation()" onmousedown="event.stopPropagation()"
+        onblur="saveCardTitle(${gi},this)"
+        onkeydown="if(event.key==='Enter'){event.preventDefault();this.blur();}"
+        title="Clique para editar o título do card">${headerText}${colorDot}</div>
       ${ev.specialTime?`<div class="ev-date-sub">⚠️ Solenidade: ${ev.specialTime}hs</div>`:''}
     </div>
     <div class="prev-event-rows">
       ${displayTime?`<div class="prev-row horario" onclick="openEditModal(${gi},'__time__')" title="Clique para editar horário">
         <div class="prev-row-label" style="background:${horarioBg}">Horário</div>
-        <div class="prev-row-value" style="background:${horarioBg}">${displayTime}hs${cardTimes[gi]?' ✏️':''}</div>
+        <div class="prev-row-value" style="background:${horarioBg}">${displayTime}hs${cardTimes[gi]?' <span class="edit-marker no-export">✏️</span>':''}</div>
       </div>`:''}
       ${slotRows}
     </div>
   </div>`;
+}
+
+function saveCardTitle(gi,el){
+  const val=el.textContent.replace(/\s+/g,' ').trim();
+  cardTitles[gi]=val;
+  el.textContent=val;
 }
 
 function refreshBlock(gi){
@@ -995,20 +1191,28 @@ function closeEditModal(){
   editCtx=null;
 }
 
+function toggleExportUI(hide){
+  document.querySelectorAll('#escalaPreview .no-export').forEach(el=>{el.style.display=hide?'none':'';});
+}
+
 function exportPNG(){
+  toggleExportUI(true);
   html2canvas(document.getElementById('escalaPreview'),{scale:2,useCORS:true,backgroundColor:'#ffffff'}).then(canvas=>{
+    toggleExportUI(false);
     const a=document.createElement('a');a.download='Escala_PASCOM.png';a.href=canvas.toDataURL('image/png');a.click();
-  });
+  }).catch(()=>toggleExportUI(false));
 }
 function exportPDF(){
+  toggleExportUI(true);
   html2canvas(document.getElementById('escalaPreview'),{scale:2,useCORS:true,backgroundColor:'#ffffff'}).then(canvas=>{
+    toggleExportUI(false);
     const img=canvas.toDataURL('image/png'),w=canvas.width,h=canvas.height,pw=210,ph=Math.round(pw/(w/h));
     const win=window.open('','_blank');
     win.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Escala PASCOM</title>
     <style>*{margin:0;padding:0}@media print{@page{margin:0;size:${pw}mm ${ph}mm}img{width:100%}}</style>
     </head><body><img src="${img}"></body></html>`);
     win.document.close();win.onload=()=>setTimeout(()=>win.print(),500);
-  });
+  }).catch(()=>toggleExportUI(false));
 }
 
 function generatePDF(){
