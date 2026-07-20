@@ -1,0 +1,12 @@
+name: Manter Supabase Ativo
+on:
+  schedule: 
+    - cron: '0 0 * * 1' # toda segunda-feira à meia-noite (UTC)
+  workflow_dispatch:
+jobs:
+  ping_supabase:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Fazer requisição na API do projeto Supabase
+        run: |
+          curl -I "https://newbygviinkztjhkxbvz.supabase.co/rest/v1/" -H "apikey: sb_publishable_JFmMw_uIZyQVkF6fTl6qlw_3mk8eO6S"
