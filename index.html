@@ -12,6 +12,7 @@
 <meta property="og:site_name" content="PASCOM Escalas">
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 :root{--gold:#c9a84c;--gold-light:#f0d080;--gold-dark:#8a6f2e;--bg-deep:#0d0f1a;--bg-card:#141728;--bg-hover:#222846;--text-primary:#f0ead8;--text-muted:#8a8fa8;--green:#5abfa0;--red:#d4594a;--border:rgba(201,168,76,.18);--shadow:0 8px 40px rgba(0,0,0,.6)}
 *{box-sizing:border-box;margin:0;padding:0}
@@ -254,6 +255,7 @@ h1{font-family:'Cinzel',serif;font-size:clamp(1.6rem,4vw,2.6rem);color:var(--gol
 .manual-form-row{display:flex;gap:8px;flex-wrap:wrap}
 .manual-input{flex:1;min-width:110px;padding:9px 12px;background:#0d0f1a;border:1px solid var(--border);border-radius:8px;color:var(--text-primary);font-size:.82rem;outline:none;font-family:'Lato',sans-serif}
 .manual-input:focus{border-color:var(--gold)}
+.manual-input[type=date]{color-scheme:dark}
 .manual-input-day{max-width:80px;flex:0 0 80px}
 .manual-add-btn{padding:9px 20px;background:linear-gradient(135deg,#1e6e50,#2ecc8a);color:#fff;border:none;border-radius:20px;font-family:'Cinzel',serif;font-size:.78rem;font-weight:700;cursor:pointer;white-space:nowrap}
 .manual-events-list{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
@@ -274,6 +276,24 @@ h1{font-family:'Cinzel',serif;font-size:clamp(1.6rem,4vw,2.6rem);color:var(--gol
 .color-edit-btn{display:inline-block;margin-top:3px;font-size:.62rem;opacity:.55;cursor:pointer}
 .color-edit-btn:hover{opacity:1}
 .edit-marker{opacity:.85}
+/* ESCALA COLABORATIVA — criação de evento e lista de confirmações */
+.sbc-box{background:rgba(0,0,0,.18);border:1px solid var(--border);border-radius:12px;padding:14px;margin-top:16px}
+.sbc-title{font-family:'Cinzel',serif;color:var(--gold);font-size:.8rem;letter-spacing:.05em;margin-bottom:10px}
+.sbc-toggle{display:flex;gap:8px;margin-bottom:12px}
+.sbc-btn{flex:1;padding:8px 10px;background:#0d0f1a;border:1px solid var(--border);border-radius:20px;color:var(--text-muted);font-family:'Cinzel',serif;font-size:.7rem;font-weight:700;cursor:pointer}
+.sbc-btn.active{background:linear-gradient(135deg,var(--gold-dark),var(--gold));color:var(--bg-deep);border-color:transparent}
+.sbc-panel{display:none;flex-direction:column;gap:10px}
+.sbc-panel.active{display:flex}
+.sbc-eventlist{margin-top:18px;display:flex;flex-direction:column;gap:10px}
+.sbc-ev{background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:12px 14px}
+.sbc-ev-date{font-family:'Cinzel',serif;color:var(--gold);font-size:.72rem;letter-spacing:.05em;text-transform:uppercase}
+.sbc-ev-title{font-weight:700;font-size:.9rem;margin-top:2px}
+.sbc-ev-people{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px}
+.sbc-chip{padding:3px 10px;background:rgba(90,191,160,.12);border:1px solid rgba(90,191,160,.3);border-radius:16px;font-size:.7rem;color:var(--green)}
+.sbc-empty{font-size:.72rem;color:var(--text-muted);font-style:italic}
+.sbc-ev-actions{margin-top:8px;display:flex;gap:8px;flex-wrap:wrap}
+.sbc-mini-btn{background:none;border:1px solid var(--border);color:var(--text-muted);border-radius:16px;padding:4px 12px;font-size:.68rem;cursor:pointer}
+.sbc-mini-btn:hover{border-color:var(--gold);color:var(--gold-light)}
 </style>
 </head>
 <body>
@@ -323,6 +343,7 @@ h1{font-family:'Cinzel',serif;font-size:clamp(1.6rem,4vw,2.6rem);color:var(--gol
   <div class="mode-toggle">
     <button class="mode-btn active" id="modeBtnUpload" onclick="setEntryMode('upload')">📤 Enviar Planilha CSV</button>
     <button class="mode-btn" id="modeBtnManual" onclick="setEntryMode('manual')">✏️ Criar Escala Manualmente</button>
+    <button class="mode-btn" id="modeBtnSupabase" onclick="setEntryMode('supabase')">🔗 Escala Colaborativa</button>
   </div>
 
   <div class="upload-zone" id="uploadZone" onclick="document.getElementById('fileInput').click()">
@@ -359,6 +380,67 @@ h1{font-family:'Cinzel',serif;font-size:clamp(1.6rem,4vw,2.6rem);color:var(--gol
     <div class="manual-hint">Depois de adicionar os eventos, clique nos dias com escala (ou selecione vários) e use "📋 Montar Escala do Lote", exatamente como no modo CSV.</div>
   </div>
 
+  <div class="manual-zone" id="supabaseZone">
+    <div class="manual-header">
+      <span class="manual-icon">🔗</span>
+      <div class="manual-title">Escala Colaborativa</div>
+      <div class="manual-sub">Crie os eventos, acompanhe quem confirmou e monte a escala — tudo aqui. A URL e a chave do Supabase ficam salvas neste navegador após a primeira vez.</div>
+    </div>
+    <div class="manual-form">
+      <div class="manual-form-row">
+        <input type="text" id="sbUrl" class="manual-input" placeholder="Project URL do Supabase (ex: https://xxxx.supabase.co)">
+      </div>
+      <div class="manual-form-row">
+        <input type="text" id="sbKey" class="manual-input" placeholder="Publishable key do Supabase">
+      </div>
+    </div>
+
+    <div class="sbc-box">
+      <div class="sbc-title">➕ Criar evento</div>
+      <div class="sbc-toggle">
+        <button class="sbc-btn active" id="sbModeBtnAvulso" onclick="setSbCreateMode('avulso')">📅 Avulso (1 dia)</button>
+        <button class="sbc-btn" id="sbModeBtnRecorrente" onclick="setSbCreateMode('recorrente')">🔁 Recorrente</button>
+      </div>
+      <div class="sbc-panel active" id="sbPainelAvulso">
+        <div class="manual-form-row">
+          <input type="date" id="sbAvDate" class="manual-input">
+          <input type="text" id="sbAvTitulo" class="manual-input" placeholder="Título (ex: Solenidade de Sant'Ana)">
+          <input type="text" id="sbAvHorario" class="manual-input" placeholder="Horário (ex: 18:00)">
+        </div>
+        <div class="manual-form-row"><button class="manual-add-btn" onclick="sbCriarEventoAvulso()">＋ Criar evento</button></div>
+      </div>
+      <div class="sbc-panel" id="sbPainelRecorrente">
+        <div class="manual-form-row">
+          <button class="sbc-mini-btn" onclick="preencherPadraoSemana(0)">☀️ Padrão de Domingo (mês em exibição)</button>
+          <button class="sbc-mini-btn" onclick="preencherPadraoSemana(4)">🙏 Padrão de Quinta-feira (mês em exibição)</button>
+        </div>
+        <div class="manual-form-row">
+          <select id="sbRecDia" class="manual-input">
+            <option value="0">Domingo</option><option value="1">Segunda-feira</option>
+            <option value="2">Terça-feira</option><option value="3">Quarta-feira</option>
+            <option value="4">Quinta-feira</option><option value="5">Sexta-feira</option>
+            <option value="6">Sábado</option>
+          </select>
+          <input type="text" id="sbRecTitulo" class="manual-input" placeholder="Título (ex: Missa Dominical)">
+          <input type="text" id="sbRecHorario" class="manual-input" placeholder="Horário (ex: 18:00)">
+        </div>
+        <div class="manual-form-row">
+          <input type="date" id="sbRecInicio" class="manual-input">
+          <input type="date" id="sbRecFim" class="manual-input">
+        </div>
+        <div class="manual-form-row"><button class="manual-add-btn" onclick="sbCriarEventosRecorrentes()">＋ Criar todos os eventos</button></div>
+      </div>
+    </div>
+
+    <div class="manual-form-row" style="margin-top:14px">
+      <button class="manual-add-btn" onclick="buscarDoSupabase()">🔄 Buscar / Atualizar do Supabase</button>
+    </div>
+    <div class="manual-hint" id="sbStatus"></div>
+
+    <div id="sbEventList"></div>
+  </div>
+
+
   <div class="calendar-section" id="calendarSection">
     <div class="calendar-nav">
       <button class="nav-btn" id="prevMonth">&#8592;</button>
@@ -373,6 +455,7 @@ h1{font-family:'Cinzel',serif;font-size:clamp(1.6rem,4vw,2.6rem);color:var(--gol
     <div id="scheduleContent"></div>
     <div id="pdfBtnWrap" style="display:none;text-align:center;margin-top:28px;">
       <button class="pdf-btn" onclick="generatePDF()">📄 Gerar PDF desta Escala</button>
+      <button class="pdf-btn png-quick-btn" onclick="generatePNG()" style="margin-left:12px">🖼️ Baixar PNG desta Escala</button>
     </div>
   </div>
 
@@ -595,13 +678,21 @@ function setEntryMode(mode){
   entryMode=mode;
   document.getElementById('modeBtnUpload').classList.toggle('active',mode==='upload');
   document.getElementById('modeBtnManual').classList.toggle('active',mode==='manual');
+  document.getElementById('modeBtnSupabase').classList.toggle('active',mode==='supabase');
   document.getElementById('uploadZone').style.display=mode==='upload'?'':'none';
   document.getElementById('manualZone').classList.toggle('visible',mode==='manual');
+  document.getElementById('supabaseZone').classList.toggle('visible',mode==='supabase');
   pendingManualDay=null;
   updatePendingLabel();
   if(mode==='manual'){
     renderManualEventsList();
     buildUI();
+  }
+  if(mode==='supabase'){
+    const savedUrl=localStorage.getItem('pascom_sb_url');
+    const savedKey=localStorage.getItem('pascom_sb_key');
+    if(savedUrl)document.getElementById('sbUrl').value=savedUrl;
+    if(savedKey)document.getElementById('sbKey').value=savedKey;
   }
 }
 
@@ -674,6 +765,192 @@ function renderManualEventsList(){
   const manual=allEvents.filter(e=>e.manual);
   if(manual.length===0){wrap.innerHTML='<div class="no-manual-events">Nenhum evento manual adicionado ainda.</div>';return;}
   wrap.innerHTML=manual.map(e=>`<span class="manual-ev-chip">${String(e.day).padStart(2,'0')}/${String(e.month+1).padStart(2,'0')} — ${e.title}${e.time?' ('+e.time+'hs)':''}<button onclick="removeManualEvent('${e._mid}')" title="Remover">✕</button></span>`).join('');
+}
+
+// ══════════════════════════════════════════════════════════
+// ESCALA COLABORATIVA — busca eventos + confirmações do Supabase
+// ══════════════════════════════════════════════════════════
+let lastSbEventos=[];
+let lastSbInscricoes=[];
+
+function getSbClient(){
+  const url=document.getElementById('sbUrl').value.trim();
+  const key=document.getElementById('sbKey').value.trim();
+  if(!url||!key)return null;
+  if(typeof supabase==='undefined')return null;
+  localStorage.setItem('pascom_sb_url',url);
+  localStorage.setItem('pascom_sb_key',key);
+  return supabase.createClient(url,key);
+}
+
+function setSbCreateMode(mode){
+  document.getElementById('sbModeBtnAvulso').classList.toggle('active',mode==='avulso');
+  document.getElementById('sbModeBtnRecorrente').classList.toggle('active',mode==='recorrente');
+  document.getElementById('sbPainelAvulso').classList.toggle('active',mode==='avulso');
+  document.getElementById('sbPainelRecorrente').classList.toggle('active',mode==='recorrente');
+}
+
+function toDateInputValue(d){
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+}
+
+// Preenche o formulário recorrente com o dia da semana escolhido, cobrindo o mês
+// que está aberto no calendário abaixo — só falta digitar título/horário e confirmar.
+function preencherPadraoSemana(diaSemana){
+  setSbCreateMode('recorrente');
+  document.getElementById('sbRecDia').value=String(diaSemana);
+  const primeiro=new Date(currentYear,currentMonth,1);
+  const ultimo=new Date(currentYear,currentMonth+1,0);
+  document.getElementById('sbRecInicio').value=toDateInputValue(primeiro);
+  document.getElementById('sbRecFim').value=toDateInputValue(ultimo);
+  document.getElementById('sbRecTitulo').focus();
+}
+
+// 'YYYY-MM-DD' (valor de um <input type=date>) -> {dia,mes,ano}, sem risco de fuso horário
+function sbParseDataInput(valor){
+  const [ano,mes,dia]=valor.split('-').map(Number);
+  return {dia,mes:mes-1,ano};
+}
+
+async function sbCriarEventoAvulso(){
+  const sbClient=getSbClient();
+  const status=document.getElementById('sbStatus');
+  if(!sbClient){status.textContent='⚠️ Preencha a URL e a chave do Supabase primeiro.';return;}
+  const dataVal=document.getElementById('sbAvDate').value;
+  const titulo=document.getElementById('sbAvTitulo').value.trim();
+  const horario=document.getElementById('sbAvHorario').value.trim();
+  if(!dataVal){alert('Escolha uma data.');return;}
+  if(!titulo){alert('Informe um título para o evento.');return;}
+  const {dia,mes,ano}=sbParseDataInput(dataVal);
+  const {error}=await sbClient.from('eventos').insert({dia,mes,ano,titulo,horario:horario||null});
+  if(error){status.textContent='⚠️ Erro ao criar evento: '+(error.message||error.hint||'motivo desconhecido');console.error(error);return;}
+  document.getElementById('sbAvTitulo').value='';
+  document.getElementById('sbAvHorario').value='';
+  status.textContent='✅ Evento criado!';
+  buscarDoSupabase();
+}
+
+async function sbCriarEventosRecorrentes(){
+  const sbClient=getSbClient();
+  const status=document.getElementById('sbStatus');
+  if(!sbClient){status.textContent='⚠️ Preencha a URL e a chave do Supabase primeiro.';return;}
+  const diaSemanaAlvo=parseInt(document.getElementById('sbRecDia').value,10);
+  const titulo=document.getElementById('sbRecTitulo').value.trim();
+  const horario=document.getElementById('sbRecHorario').value.trim();
+  const inicioVal=document.getElementById('sbRecInicio').value;
+  const fimVal=document.getElementById('sbRecFim').value;
+  if(!titulo){alert('Informe um título para o evento.');return;}
+  if(!inicioVal||!fimVal){alert('Escolha a data de início e a data de fim do período.');return;}
+
+  const ini=sbParseDataInput(inicioVal),fim=sbParseDataInput(fimVal);
+  const cursor=new Date(ini.ano,ini.mes,ini.dia);
+  const dataFim=new Date(fim.ano,fim.mes,fim.dia);
+  if(cursor>dataFim){alert('A data de início precisa ser antes da data de fim.');return;}
+
+  const novos=[];
+  while(cursor<=dataFim){
+    if(cursor.getDay()===diaSemanaAlvo){
+      novos.push({dia:cursor.getDate(),mes:cursor.getMonth(),ano:cursor.getFullYear(),titulo,horario:horario||null});
+    }
+    cursor.setDate(cursor.getDate()+1);
+  }
+  if(novos.length===0){alert('Nenhuma data com esse dia da semana foi encontrada nesse período.');return;}
+
+  const {error}=await sbClient.from('eventos').insert(novos);
+  if(error){status.textContent='⚠️ Erro ao criar eventos: '+(error.message||error.hint||'motivo desconhecido');console.error(error);return;}
+  document.getElementById('sbRecTitulo').value='';
+  document.getElementById('sbRecHorario').value='';
+  document.getElementById('sbRecInicio').value='';
+  document.getElementById('sbRecFim').value='';
+  status.textContent=`✅ ${novos.length} evento(s) criado(s)!`;
+  buscarDoSupabase();
+}
+
+async function sbExcluirEvento(eventoId,titulo){
+  if(!confirm(`Excluir o evento "${titulo}"? As confirmações desse dia também serão apagadas.`))return;
+  const sbClient=getSbClient();
+  if(!sbClient)return;
+  const {error}=await sbClient.from('eventos').delete().eq('id',eventoId);
+  if(error){document.getElementById('sbStatus').textContent='⚠️ Erro ao excluir.';console.error(error);return;}
+  document.getElementById('sbStatus').textContent='Evento excluído.';
+  buscarDoSupabase();
+}
+
+function sbCopiarNomes(nomes){
+  navigator.clipboard.writeText(nomes).then(()=>{
+    document.getElementById('sbStatus').textContent='📋 Nomes copiados!';
+  });
+}
+
+function renderSbEventList(){
+  const wrap=document.getElementById('sbEventList');
+  if(!wrap)return;
+  if(lastSbEventos.length===0){wrap.innerHTML='';return;}
+  wrap.innerHTML=`<div class="sbc-eventlist">${lastSbEventos.map(ev=>{
+    const pessoas=lastSbInscricoes.filter(i=>i.evento_id===ev.id);
+    const listaNomes=pessoas.map(p=>p.nome).join(', ');
+    return `<div class="sbc-ev">
+      <div class="sbc-ev-date">${String(ev.dia).padStart(2,'0')}/${String(ev.mes+1).padStart(2,'0')}/${ev.ano}</div>
+      <div class="sbc-ev-title">${ev.titulo}${ev.horario?' — '+ev.horario+'hs':''}</div>
+      <div class="sbc-ev-people">
+        ${pessoas.length>0?pessoas.map(p=>`<span class="sbc-chip">${p.nome}</span>`).join(''):'<span class="sbc-empty">Ninguém confirmou ainda</span>'}
+      </div>
+      <div class="sbc-ev-actions">
+        ${pessoas.length>0?`<button class="sbc-mini-btn" onclick="sbCopiarNomes('${listaNomes.replace(/'/g,"\\'")}')">📋 Copiar nomes</button>`:''}
+        <button class="sbc-mini-btn" onclick="sbExcluirEvento('${ev.id}','${ev.titulo.replace(/'/g,"\\'")}')">🗑️ Excluir</button>
+      </div>
+    </div>`;
+  }).join('')}</div>`;
+}
+
+async function buscarDoSupabase(){
+  const url=document.getElementById('sbUrl').value.trim();
+  const key=document.getElementById('sbKey').value.trim();
+  const status=document.getElementById('sbStatus');
+  if(!url||!key){status.textContent='⚠️ Preencha a URL e a chave do Supabase.';return;}
+  if(typeof supabase==='undefined'){status.textContent='⚠️ Biblioteca do Supabase não carregou. Verifique sua internet.';return;}
+
+  localStorage.setItem('pascom_sb_url',url);
+  localStorage.setItem('pascom_sb_key',key);
+  status.textContent='🔄 Buscando dados...';
+
+  try{
+    const sbClient=supabase.createClient(url,key);
+    const {data:eventos,error:errEv}=await sbClient.from('eventos').select('*').order('ano').order('mes').order('dia');
+    if(errEv)throw errEv;
+    const {data:inscricoes,error:errIns}=await sbClient.from('inscricoes').select('*');
+    if(errIns)throw errIns;
+
+    lastSbEventos=eventos||[];
+    lastSbInscricoes=inscricoes||[];
+    renderSbEventList();
+
+    if(!eventos||eventos.length===0){
+      status.textContent='Nenhum evento encontrado nesse projeto do Supabase. Crie um acima ⬆️';
+      allEvents=[];
+      buildUI();
+      return;
+    }
+
+    let ci=Object.keys(nameColors).length;
+    const novosEventos=eventos.map(ev=>{
+      const names=(inscricoes||[]).filter(i=>i.evento_id===ev.id).map(i=>i.nome);
+      names.forEach(n=>{if(!(n in nameColors)){nameColors[n]=ci%10;ci++;}});
+      return{day:ev.dia,month:ev.mes,year:ev.ano,title:ev.titulo,time:ev.horario||null,specialTime:null,names,supabaseId:ev.id};
+    });
+
+    allEvents=novosEventos.sort((a,b)=>{
+      const da=new Date(a.year,a.month,a.day),db=new Date(b.year,b.month,b.day);
+      return da-db||(a.time||'00:00').localeCompare(b.time||'00:00');
+    });
+    currentYear=allEvents[0].year;currentMonth=allEvents[0].month;
+    selectedDay=null;batchDays=[];savedBatches=[];cardColors={};cardTimes={};cardTitles={};groupLabels={};
+    status.textContent=`✅ ${eventos.length} evento(s) carregado(s) com sucesso!`;
+    buildUI();
+  }catch(err){
+    console.error(err);
+    status.textContent='⚠️ Erro ao buscar dados. Confira a URL e a chave do Supabase.';
+  }
 }
 
 // ══════════════════════════════════════════════════════════
@@ -1238,6 +1515,54 @@ function generatePDF(){
   const win=window.open(url,'_blank');
   if(win)win.onload=()=>setTimeout(()=>{win.print();URL.revokeObjectURL(url);},800);
   setTimeout(()=>{btn.textContent='📄 Gerar PDF desta Escala';btn.disabled=false;},1500);
+}
+
+async function generatePNG(){
+  const btn=document.querySelector('#pdfBtnWrap .png-quick-btn');
+  const originalText=btn.textContent;
+  btn.textContent='⏳ Gerando...';btn.disabled=true;
+  const monthName=PT_MONTHS[currentMonth]+' '+currentYear;
+  const evs=selectedDay?allEvents.filter(e=>e.day===selectedDay.day&&e.month===selectedDay.month&&e.year===selectedDay.year):allEvents.filter(e=>e.month===currentMonth&&e.year===currentYear);
+  const ncMap={0:'#c9a84c',1:'#5abfa0',2:'#4a7fc1',3:'#d4594a',4:'#8b6bb0',5:'#dc823c',6:'#50b464',7:'#b45082',8:'#3ca0c8',9:'#a0a03c'};
+  const byDay={};
+  for(const ev of evs){if(!byDay[ev.day])byDay[ev.day]=[];byDay[ev.day].push(ev);}
+  let cards='';
+  for(const day of Object.keys(byDay).map(Number).sort((a,b)=>a-b)){
+    const dow=PT_DAYS_FULL[new Date(currentYear,currentMonth,day).getDay()];
+    cards+=`<div class="dgt">${String(day).padStart(2,'0')} de ${PT_MONTHS[currentMonth]} — ${dow}</div>`;
+    for(const ev of byDay[day]){
+      const nh=ev.names.map(n=>{const c=ncMap[nameColors[n]||0];return`<span style="display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;color:${c};border:1px solid ${c}44;background:${c}18;margin:2px 3px">${n.trim()}</span>`;}).join('');
+      cards+=`<div class="pc"><div class="pcd">📅 ${String(ev.day).padStart(2,'0')}/${String(ev.month+1).padStart(2,'0')}/${ev.year}</div><div class="pct">${ev.title}</div>${ev.time?`<div class="pcti">⏰ ${ev.time}hs</div>`:''}<div style="margin-top:8px">${nh}</div></div>`;
+    }
+  }
+  const wrapper=document.createElement('div');
+  wrapper.style.cssText='position:fixed;left:-9999px;top:0;width:650px';
+  wrapper.innerHTML=`<style>
+    .png-export-root{font-family:'Lato',sans-serif;background:#0d0f1a;color:#f0ead8;padding:30px 40px}
+    .png-export-root .ph{text-align:center;border-bottom:2px solid #c9a84c44;padding-bottom:20px;margin-bottom:28px}
+    .png-export-root .pi{font-size:2rem;display:block;margin-bottom:8px}
+    .png-export-root .pt{font-family:'Cinzel',serif;font-size:22px;color:#c9a84c;letter-spacing:.12em}
+    .png-export-root .ps{font-size:11px;color:#8a8fa8;letter-spacing:.2em;text-transform:uppercase;margin-top:4px}
+    .png-export-root .pm{font-family:'Cinzel',serif;font-size:10px;color:#f0d080;font-style:italic;margin-top:3px}
+    .png-export-root .pmn{font-family:'Cinzel',serif;font-size:13px;color:#f0d080;margin-top:10px}
+    .png-export-root .dgt{font-family:'Cinzel',serif;font-size:12px;color:#c9a84c;text-transform:uppercase;margin:20px 0 10px;padding-bottom:5px;border-bottom:1px solid #c9a84c30}
+    .png-export-root .pc{background:#141728;border:1px solid #c9a84c28;border-radius:10px;padding:14px 16px;margin-bottom:10px;position:relative}
+    .png-export-root .pcd{font-size:10px;color:#c9a84c;font-family:'Cinzel',serif;margin-bottom:3px}
+    .png-export-root .pct{font-size:13px;font-weight:700;color:#f0ead8;margin-bottom:2px}
+    .png-export-root .pcti{font-size:11px;color:#8a8fa8;margin-bottom:4px}
+    .png-export-root .pf{text-align:center;margin-top:36px;font-size:10px;color:#8a8fa8;border-top:1px solid #c9a84c22;padding-top:14px}
+  </style>
+  <div class="png-export-root"><div class="ph"><span class="pi">📖</span><div class="pt">ESCALA DA PASCOM</div><div class="ps">Pastoral da Comunicação</div><div class="pm">Tudo para maior glória de Deus</div><div class="pmn">${selectedDay?`${String(selectedDay.day).padStart(2,'0')} de ${PT_MONTHS[selectedDay.month]} de ${selectedDay.year}`:monthName}</div></div>${cards}<div class="pf">Gerado em ${new Date().toLocaleDateString('pt-BR')}</div></div>`;
+  document.body.appendChild(wrapper);
+  try{
+    const canvas=await html2canvas(wrapper.querySelector('.png-export-root'),{scale:2,backgroundColor:'#0d0f1a',useCORS:true});
+    const a=document.createElement('a');a.download='Escala_PASCOM.png';a.href=canvas.toDataURL('image/png');a.click();
+  }catch(err){
+    console.error(err);
+    alert('Não foi possível gerar o PNG.');
+  }
+  document.body.removeChild(wrapper);
+  btn.textContent=originalText;btn.disabled=false;
 }
 
 const BAR_COLORS={
