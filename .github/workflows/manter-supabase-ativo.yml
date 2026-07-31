@@ -1,7 +1,7 @@
 name: Manter Supabase Ativo
 on:
   schedule: 
-    - cron: '0 0 * * 1' # toda segunda-feira à meia-noite (UTC)
+    - cron: '0 0 */3 * *' # a cada 3 dias, à meia-noite (UTC)
   workflow_dispatch:
 jobs:
   ping_supabase:
