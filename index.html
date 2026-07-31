@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Escala da PASCOM</title>
+<script>if(sessionStorage.getItem('pascom_coord_ok')!=='1')document.documentElement.classList.add('pascom-locked');</script>
 <meta name="description" content="Sistema para montagem dinâmica de escalas da Pastoral da Comunicação (PASCOM).">
 <meta property="og:title" content="Escala da PASCOM">
 <meta property="og:description" content=" Facilitador de escalas para a PASCOM.">
@@ -15,6 +16,17 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 :root{--gold:#c9a84c;--gold-light:#f0d080;--gold-dark:#8a6f2e;--bg-deep:#0d0f1a;--bg-card:#141728;--bg-hover:#222846;--text-primary:#f0ead8;--text-muted:#8a8fa8;--green:#5abfa0;--red:#d4594a;--border:rgba(201,168,76,.18);--shadow:0 8px 40px rgba(0,0,0,.6)}
+html.pascom-locked body>*:not(#coordGate){display:none!important}
+#coordGate{display:none;position:fixed;inset:0;z-index:9999;background:var(--bg-deep);align-items:center;justify-content:center}
+html.pascom-locked #coordGate{display:flex}
+.coord-gate-box{max-width:340px;width:90%;text-align:center;background:var(--bg-card);border:1px solid var(--border);border-radius:16px;padding:32px 26px}
+.coord-gate-box .gate-icon{font-size:2rem;margin-bottom:6px;display:block}
+.coord-gate-box h2{font-family:'Cinzel',serif;color:var(--gold);font-size:1.05rem;letter-spacing:.05em}
+.coord-gate-box p{font-size:.8rem;color:var(--text-muted);margin-top:8px}
+.coord-gate-box input{width:100%;padding:10px 14px;background:#0d0f1a;border:1px solid var(--border);border-radius:8px;color:var(--text-primary);font-size:1rem;text-align:center;letter-spacing:.2em;margin:16px 0;outline:none}
+.coord-gate-box input:focus{border-color:var(--gold)}
+.coord-gate-box button{padding:10px 26px;background:linear-gradient(135deg,var(--gold-dark),var(--gold));color:var(--bg-deep);border:none;border-radius:24px;font-family:'Cinzel',serif;font-weight:700;font-size:.82rem;cursor:pointer}
+.coord-gate-err{color:var(--red);font-size:.78rem;margin-top:10px;min-height:1em}
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Lato',sans-serif;background:var(--bg-deep);color:var(--text-primary);min-height:100vh;overflow-x:hidden}
 body::before{content:'';position:fixed;inset:0;background-image:radial-gradient(1px 1px at 20% 30%,rgba(201,168,76,.3) 0%,transparent 100%),radial-gradient(1px 1px at 80% 10%,rgba(201,168,76,.2) 0%,transparent 100%),radial-gradient(1px 1px at 50% 80%,rgba(255,255,255,.1) 0%,transparent 100%),radial-gradient(1px 1px at 10% 60%,rgba(201,168,76,.15) 0%,transparent 100%),radial-gradient(1px 1px at 90% 70%,rgba(255,255,255,.08) 0%,transparent 100%);pointer-events:none;z-index:0}
@@ -297,6 +309,30 @@ h1{font-family:'Cinzel',serif;font-size:clamp(1.6rem,4vw,2.6rem);color:var(--gol
 </style>
 </head>
 <body>
+
+<div id="coordGate">
+  <div class="coord-gate-box">
+    <span class="gate-icon">🔒</span>
+    <h2>Escala da PASCOM</h2>
+    <p>Digite o código de acesso combinado com a equipe</p>
+    <input id="coordPin" type="password" placeholder="••••" inputmode="numeric">
+    <div class="coord-gate-err" id="coordGateErr"></div>
+    <button onclick="pascomTentarEntrar()">Entrar</button>
+  </div>
+</div>
+<script>
+function pascomTentarEntrar(){
+  const CODIGO_ACESSO='Serpascom-com-verdade2008'; // troque por um código só seu/da equipe
+  const val=document.getElementById('coordPin').value.trim();
+  if(val===CODIGO_ACESSO){
+    sessionStorage.setItem('pascom_coord_ok','1');
+    document.documentElement.classList.remove('pascom-locked');
+  }else{
+    document.getElementById('coordGateErr').textContent='Código incorreto.';
+  }
+}
+document.getElementById('coordPin').addEventListener('keydown',e=>{if(e.key==='Enter')pascomTentarEntrar();});
+</script>
 
 <div id="copyToast">✅ <span id="toastName"></span> copiado!</div>
 
