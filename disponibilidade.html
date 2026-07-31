@@ -133,12 +133,9 @@ function renderCard(ev,total,jaEstou){
     <div class="ev-date">${String(ev.dia).padStart(2,'0')} de ${MESES[ev.mes]} — ${diaSemana}</div>
     <div class="ev-title">${ev.titulo}</div>
     ${ev.horario?`<div class="ev-time">🕐 ${ev.horario}${/hs$/i.test(ev.horario)?'':'hs'}</div>`:''}
-    <div class="ev-people">
-      ${total>0?`<span class="ev-count">👥 ${total} pessoa${total>1?'s':''} confirmada${total>1?'s':''}</span>`:'<span class="ev-empty">Ninguém confirmado ainda</span>'}
-    </div>
-    <div class="ev-actions">
+        <div class="ev-actions">
       <button class="ev-btn${jaEstou?' joined':''}" ${jaEstou?'disabled':''} onclick="confirmarPresenca('${ev.id}',this)">
-        ${jaEstou?'✅ Você confirmou':'🙋 Eu vou nesse dia'}
+        ${jaEstou?'✅ Disponibilidade confirmada':'Eu vou nesse dia'}
       </button>
     </div>
   </div>`;
