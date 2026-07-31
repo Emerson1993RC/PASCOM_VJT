@@ -411,6 +411,10 @@ h1{font-family:'Cinzel',serif;font-size:clamp(1.6rem,4vw,2.6rem);color:var(--gol
       </div>
       <div class="sbc-panel" id="sbPainelRecorrente">
         <div class="manual-form-row">
+          <button class="sbc-mini-btn" onclick="preencherPadraoSemana(0)">☀️ Padrão de Domingo (mês em exibição)</button>
+          <button class="sbc-mini-btn" onclick="preencherPadraoSemana(4)">🙏 Padrão de Quinta-feira (mês em exibição)</button>
+        </div>
+        <div class="manual-form-row">
           <select id="sbRecDia" class="manual-input">
             <option value="0">Domingo</option><option value="1">Segunda-feira</option>
             <option value="2">Terça-feira</option><option value="3">Quarta-feira</option>
@@ -786,6 +790,22 @@ function setSbCreateMode(mode){
   document.getElementById('sbPainelRecorrente').classList.toggle('active',mode==='recorrente');
 }
 
+function toDateInputValue(d){
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+}
+
+// Preenche o formulário recorrente com o dia da semana escolhido, cobrindo o mês
+// que está aberto no calendário abaixo — só falta digitar título/horário e confirmar.
+function preencherPadraoSemana(diaSemana){
+  setSbCreateMode('recorrente');
+  document.getElementById('sbRecDia').value=String(diaSemana);
+  const primeiro=new Date(currentYear,currentMonth,1);
+  const ultimo=new Date(currentYear,currentMonth+1,0);
+  document.getElementById('sbRecInicio').value=toDateInputValue(primeiro);
+  document.getElementById('sbRecFim').value=toDateInputValue(ultimo);
+  document.getElementById('sbRecTitulo').focus();
+}
+
 // 'YYYY-MM-DD' (valor de um <input type=date>) -> {dia,mes,ano}, sem risco de fuso horário
 function sbParseDataInput(valor){
   const [ano,mes,dia]=valor.split('-').map(Number);
@@ -803,7 +823,7 @@ async function sbCriarEventoAvulso(){
   if(!titulo){alert('Informe um título para o evento.');return;}
   const {dia,mes,ano}=sbParseDataInput(dataVal);
   const {error}=await sbClient.from('eventos').insert({dia,mes,ano,titulo,horario:horario||null});
-  if(error){status.textContent='⚠️ Erro ao criar evento.';console.error(error);return;}
+  if(error){status.textContent='⚠️ Erro ao criar evento: '+(error.message||error.hint||'motivo desconhecido');console.error(error);return;}
   document.getElementById('sbAvTitulo').value='';
   document.getElementById('sbAvHorario').value='';
   status.textContent='✅ Evento criado!';
@@ -837,7 +857,7 @@ async function sbCriarEventosRecorrentes(){
   if(novos.length===0){alert('Nenhuma data com esse dia da semana foi encontrada nesse período.');return;}
 
   const {error}=await sbClient.from('eventos').insert(novos);
-  if(error){status.textContent='⚠️ Erro ao criar eventos.';console.error(error);return;}
+  if(error){status.textContent='⚠️ Erro ao criar eventos: '+(error.message||error.hint||'motivo desconhecido');console.error(error);return;}
   document.getElementById('sbRecTitulo').value='';
   document.getElementById('sbRecHorario').value='';
   document.getElementById('sbRecInicio').value='';
