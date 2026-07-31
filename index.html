@@ -322,7 +322,7 @@ h1{font-family:'Cinzel',serif;font-size:clamp(1.6rem,4vw,2.6rem);color:var(--gol
 </div>
 <script>
 function pascomTentarEntrar(){
-  const CODIGO_ACESSO='Serpascom-com-verdade2008'; // troque por um código só seu/da equipe
+  const CODIGO_ACESSO='4321'; // troque por um código só seu/da equipe
   const val=document.getElementById('coordPin').value.trim();
   if(val===CODIGO_ACESSO){
     sessionStorage.setItem('pascom_coord_ok','1');
@@ -470,6 +470,10 @@ document.getElementById('coordPin').addEventListener('keydown',e=>{if(e.key==='E
 
     <div class="manual-form-row" style="margin-top:14px">
       <button class="manual-add-btn" onclick="buscarDoSupabase()">🔄 Buscar / Atualizar do Supabase</button>
+    </div>
+    <div class="manual-form-row" style="margin-top:10px">
+      <button class="sbc-mini-btn" onclick="sbExcluirEventosPassados()">🗑️ Excluir eventos já passados</button>
+      <button class="sbc-mini-btn" onclick="sbExcluirTodosEventos()" style="color:var(--red);border-color:rgba(212,89,74,.4)">🗑️ Excluir todos os eventos</button>
     </div>
     <div class="manual-hint" id="sbStatus"></div>
 
@@ -911,6 +915,44 @@ async function sbExcluirEvento(eventoId,titulo){
   document.getElementById('sbStatus').textContent='Evento excluído.';
   buscarDoSupabase();
 }
+
+async function sbExcluirEventosPassados(){
+  const sbClient=getSbClient();
+  const status=document.getElementById('sbStatus');
+  if(!sbClient){status.textContent='⚠️ Preencha a URL e a chave do Supabase primeiro.';return;}
+  if(lastSbEventos.length===0){status.textContent='Nenhum evento carregado ainda. Clique em "Buscar / Atualizar" primeiro.';return;}
+
+  const hoje=new Date();hoje.setHours(0,0,0,0);
+  const passados=lastSbEventos.filter(ev=>new Date(ev.ano,ev.mes,ev.dia)<hoje);
+  if(passados.length===0){alert('Não há eventos passados para excluir.');return;}
+  const idsPassados=new Set(passados.map(ev=>ev.id));
+  const totalInsc=lastSbInscricoes.filter(i=>idsPassados.has(i.evento_id)).length;
+
+  if(!confirm(`Isso vai excluir ${passados.length} evento(s) já passado(s) e ${totalInsc} confirmação(ões) ligada(s) a eles.\n\nOs eventos futuros não serão afetados. Essa ação não pode ser desfeita. Confirmar?`))return;
+
+  const {error}=await sbClient.from('eventos').delete().in('id',Array.from(idsPassados));
+  if(error){status.textContent='⚠️ Erro ao excluir: '+(error.message||'motivo desconhecido');console.error(error);return;}
+  status.textContent=`✅ ${passados.length} evento(s) passado(s) excluído(s).`;
+  buscarDoSupabase();
+}
+
+async function sbExcluirTodosEventos(){
+  const sbClient=getSbClient();
+  const status=document.getElementById('sbStatus');
+  if(!sbClient){status.textContent='⚠️ Preencha a URL e a chave do Supabase primeiro.';return;}
+  if(lastSbEventos.length===0){status.textContent='Nenhum evento carregado ainda. Clique em "Buscar / Atualizar" primeiro.';return;}
+
+  const totalInsc=lastSbInscricoes.length;
+  if(!confirm(`⚠️ ATENÇÃO: isso vai excluir TODOS os ${lastSbEventos.length} evento(s) e as ${totalInsc} confirmação(ões) ligadas a eles — passados e futuros. Essa ação não pode ser desfeita.\n\nClique OK pra continuar (vamos pedir uma confirmação final na próxima tela).`))return;
+  const confirmText=prompt('Para confirmar de vez, digite EXCLUIR (em maiúsculas):');
+  if(confirmText!=='EXCLUIR'){status.textContent='Exclusão cancelada.';return;}
+
+  const {error}=await sbClient.from('eventos').delete().neq('id','00000000-0000-0000-0000-000000000000');
+  if(error){status.textContent='⚠️ Erro ao excluir: '+(error.message||'motivo desconhecido');console.error(error);return;}
+  status.textContent='✅ Todos os eventos foram excluídos.';
+  buscarDoSupabase();
+}
+
 
 function sbCopiarNomes(nomes){
   navigator.clipboard.writeText(nomes).then(()=>{
