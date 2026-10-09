@@ -1,0 +1,50 @@
+name: Supabase keepalive
+
+# Projetos gratuitos do Supabase sao pausados apos ~7 dias sem atividade no
+# BANCO. Pings em /auth/v1/health ou /rest/v1/ (raiz) NAO contam: os projetos
+# da Vacinacao e da Puericultura pausaram mesmo com esses pings "verdes".
+# Aqui fazemos uma consulta de verdade na tabela eventos, todo dia (um dia em que o
+# GitHub nao acha maquina para rodar nao abre um buraco grande).
+# Sem login a RLS devolve lista vazia: nenhum dado sai daqui.
+# Opcional: o secret SUPABASE_DB_URL ativa tambem uma consulta direta no Postgres.
+on:
+  schedule:
+    - cron: "17 11 * * *" # todo dia, 11:17 UTC
+  workflow_dispatch: {}
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    # Repositorio publico: o GitHub desliga agendamentos apos 60 dias sem commits.
+    # O ultimo passo reativa este workflow a cada execucao para evitar isso.
+    permissions:
+      actions: write
+    steps:
+      - name: Consultar a tabela eventos via REST
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL || 'https://newbygviinkztjhkxbvz.supabase.co' }}
+          SUPABASE_PUBLISHABLE_KEY: ${{ secrets.SUPABASE_PUBLISHABLE_KEY || 'sb_publishable_JFmMw_uIZyQVkF6fTl6qlw_3mk8eO6S' }}
+        run: |
+          if [ -z "$SUPABASE_URL" ] || [ -z "$SUPABASE_PUBLISHABLE_KEY" ]; then
+            echo "::error::Faltam os secrets SUPABASE_URL e/ou SUPABASE_PUBLISHABLE_KEY."; exit 1
+          fi
+          status=$(curl -s -m 30 --retry 3 --retry-delay 10 -o /tmp/resp.txt -w "%{http_code}"             "$SUPABASE_URL/rest/v1/eventos?select=id&limit=1"             -H "apikey: $SUPABASE_PUBLISHABLE_KEY") || true
+          status=${status:-000}; echo "REST HTTP $status"
+          if [ "$status" -lt 200 ] || [ "$status" -ge 300 ]; then
+            echo "::error::Supabase respondeu HTTP $status. HTTP 000 = endereco nao encontrado: o projeto provavelmente esta PAUSADO (restaure no painel do Supabase)."
+            cat /tmp/resp.txt 2>/dev/null; exit 1
+          fi
+
+      - name: Consultar o banco direto (Postgres)
+        env:
+          SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+        run: |
+          if [ -z "$SUPABASE_DB_URL" ]; then echo "Secret SUPABASE_DB_URL nao definido, pulando."; exit 0; fi
+          psql "$SUPABASE_DB_URL" -v ON_ERROR_STOP=1 -tAc "select count(*) from eventos"
+
+      - name: Manter este agendamento ativo
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh api -X PUT "repos/${{ github.repository }}/actions/workflows/supabase-keepalive.yml/enable"
